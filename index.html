@@ -30,7 +30,6 @@
             margin: 0 auto;
         }
 
-        /* ===== HEADER ===== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -142,7 +141,7 @@
             }
         }
 
-        /* ===== ALBUM GRID (Home) ===== */
+        /* ===== ALBUM GRID ===== */
         .album-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -157,6 +156,7 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             border: 1px solid #2a2a2a;
+            position: relative;
         }
 
         body.light .album-card {
@@ -208,6 +208,42 @@
             background: #eee;
         }
 
+        /* Delete album button (overlay) */
+        .album-delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(220, 53, 69, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            opacity: 0;
+            z-index: 5;
+        }
+
+        .album-card:hover .album-delete-btn {
+            opacity: 1;
+        }
+
+        .album-delete-btn:hover {
+            transform: scale(1.15);
+            background: #dc3545;
+        }
+
+        .album-delete-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+        }
+
         /* ===== DETAIL VIEW ===== */
         .detail-header {
             display: flex;
@@ -246,7 +282,7 @@
             padding: 4px 0;
         }
 
-        /* ===== IMAGE GRID (Detail) ===== */
+        /* ===== IMAGE GRID ===== */
         .image-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -298,7 +334,6 @@
             display: block;
         }
 
-        /* Overlay Icons */
         .image-overlay {
             position: absolute;
             top: 0;
@@ -323,7 +358,6 @@
             pointer-events: auto;
         }
 
-        /* Checkbox SVG */
         .checkbox-btn {
             background: rgba(0, 0, 0, 0.6);
             border: 2px solid rgba(255, 255, 255, 0.6);
@@ -364,7 +398,6 @@
             display: block;
         }
 
-        /* Delete X SVG */
         .delete-btn {
             background: rgba(220, 53, 69, 0.85);
             border: none;
@@ -393,7 +426,6 @@
             stroke-linecap: round;
         }
 
-        /* Image Info (filename + URL) */
         .image-info {
             padding: 10px 12px 12px;
         }
@@ -452,7 +484,6 @@
             text-overflow: ellipsis;
         }
 
-        /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -560,7 +591,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ===== TOGGLE ===== */
         .toggle-theme {
             background: none;
             border: none;
@@ -574,17 +604,14 @@
             color: #1a1a1a;
         }
 
-        /* ===== HIDDEN ===== */
         .hidden {
             display: none !important;
         }
 
-        /* ===== UPLOAD INPUT ===== */
         #fileInput {
             display: none;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -601,24 +628,45 @@
         body.light ::-webkit-scrollbar-thumb {
             background: #ccc;
         }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .loading .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #2a2a2a;
+            border-top-color: #6c63ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="container" id="app">
-        <!-- HEADER -->
         <header class="header">
             <h1>📦 img<span>box</span></h1>
             <div class="header-actions">
-                <!-- INPUT TOKEN -->
                 <input type="password" class="token-input" id="tokenInput" placeholder="🔑 Masukkan Token" />
                 <button class="btn btn-primary btn-sm" onclick="saveToken()">💾 Simpan</button>
                 <button class="toggle-theme" id="themeToggle" title="Toggle theme">🌙</button>
                 <button class="btn btn-primary" id="addAlbumBtn">+ Album Baru</button>
+                <button class="btn btn-outline btn-sm" onclick="refreshData()" title="Refresh dari GitHub">🔄</button>
             </div>
         </header>
 
-        <!-- HOME VIEW -->
         <div id="homeView">
             <div id="albumGrid" class="album-grid"></div>
             <div id="emptyAlbum" class="empty-state hidden">
@@ -628,7 +676,6 @@
             </div>
         </div>
 
-        <!-- DETAIL VIEW -->
         <div id="detailView" class="hidden">
             <div class="detail-header">
                 <div class="left">
@@ -639,6 +686,7 @@
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                     <button class="btn btn-primary btn-sm" id="addImageBtn">+ Tambah Gambar</button>
                     <button class="btn btn-danger btn-sm" id="deleteSelectedBtn" disabled>🗑️ Hapus (<span id="selectedCount">0</span>)</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteAlbum()">🗑️ Hapus Album</button>
                 </div>
             </div>
 
@@ -651,7 +699,6 @@
         </div>
     </div>
 
-    <!-- MODAL KONFIRMASI -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal">
             <h3 id="modalTitle">Konfirmasi</h3>
@@ -663,20 +710,17 @@
         </div>
     </div>
 
-    <!-- TOAST -->
     <div class="toast" id="toast"></div>
-
-    <!-- FILE INPUT -->
     <input type="file" id="fileInput" accept="image/*" multiple />
 
     <script>
         // ============================================================
-        //  DATA
+        //  CONFIG
         // ============================================================
-        const STORAGE_KEY = 'imgbox_albums';
         const TOKEN_KEY = 'github_token';
         const GITHUB_REPO = 'adimigaker/imgbox';
         const GITHUB_BRANCH = 'main';
+        const DATA_FILE = 'albums.json';
 
         let GITHUB_TOKEN = localStorage.getItem(TOKEN_KEY) || '';
         let albums = [];
@@ -684,15 +728,13 @@
         let selectedImages = new Set();
         let pendingDeleteTarget = null;
         let pendingDeleteType = '';
+        let isLoading = false;
 
         // ============================================================
         //  INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
-            loadAlbums();
-            renderHome();
-
-            // Tampilkan status token di input
+            // Tampilkan status token
             const tokenInput = document.getElementById('tokenInput');
             if (GITHUB_TOKEN) {
                 tokenInput.placeholder = '✅ Token tersimpan';
@@ -716,6 +758,9 @@
             document.getElementById('deleteSelectedBtn').addEventListener('click', confirmDeleteSelected);
             document.getElementById('modalCancel').addEventListener('click', closeModal);
             document.getElementById('modalConfirm').addEventListener('click', executeDelete);
+
+            // Load data dari GitHub
+            loadAlbumsFromGitHub();
         });
 
         // ============================================================
@@ -730,31 +775,134 @@
                 return;
             }
 
-            // Simpan token
             localStorage.setItem(TOKEN_KEY, token);
             GITHUB_TOKEN = token;
 
-            // Update UI
             input.placeholder = '✅ Token tersimpan!';
             input.classList.add('token-saved');
             input.value = '';
             showToast('✅ Token berhasil disimpan!');
+
+            // Refresh data setelah token disimpan
+            loadAlbumsFromGitHub();
         }
 
         // ============================================================
-        //  DATA PERSISTENCE (LocalStorage)
+        //  LOAD DATA FROM GITHUB
         // ============================================================
-        function loadAlbums() {
+        async function loadAlbumsFromGitHub() {
+            if (isLoading) return;
+            isLoading = true;
+
+            const grid = document.getElementById('albumGrid');
+            grid.innerHTML = `
+                    <div class="loading" style="grid-column:1/-1;">
+                        <div class="spinner"></div>
+                        <p>Loading data dari GitHub...</p>
+                    </div>
+                `;
+
             try {
-                const data = localStorage.getItem(STORAGE_KEY);
-                albums = data ? JSON.parse(data) : [];
-            } catch {
-                albums = [];
+                const url =
+                    `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${DATA_FILE}`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    // File belum ada, mulai dari kosong
+                    albums = [];
+                } else {
+                    const data = await response.json();
+                    albums = data.albums || [];
+                }
+
+                saveAlbumsToLocal();
+                renderHome();
+                showToast('✅ Data dimuat dari GitHub');
+
+            } catch (err) {
+                console.error(err);
+                // Coba dari localStorage
+                const local = localStorage.getItem('imgbox_albums');
+                if (local) {
+                    try {
+                        albums = JSON.parse(local);
+                        renderHome();
+                        showToast('⚠️ Pakai data lokal (gagal load dari GitHub)');
+                    } catch {
+                        albums = [];
+                        renderHome();
+                    }
+                } else {
+                    albums = [];
+                    renderHome();
+                }
+            }
+
+            isLoading = false;
+        }
+
+        function refreshData() {
+            loadAlbumsFromGitHub();
+        }
+
+        // ============================================================
+        //  SAVE DATA TO GITHUB
+        // ============================================================
+        async function saveAlbumsToGitHub() {
+            if (!GITHUB_TOKEN) {
+                showToast('⚠️ Token belum disimpan!', 3000);
+                return false;
+            }
+
+            try {
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify({ albums }, null, 2))));
+                const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${DATA_FILE}`;
+
+                // Cek apakah file sudah ada
+                let sha = '';
+                const checkRes = await fetch(`${url}?ref=${GITHUB_BRANCH}`, {
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                });
+
+                if (checkRes.ok) {
+                    const data = await checkRes.json();
+                    sha = data.sha;
+                }
+
+                const body = {
+                    message: `Update albums data`,
+                    content: content,
+                    branch: GITHUB_BRANCH
+                };
+                if (sha) body.sha = sha;
+
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.message || 'Gagal simpan data');
+                }
+
+                return true;
+            } catch (err) {
+                console.error(err);
+                showToast('❌ Gagal simpan data ke GitHub: ' + err.message, 3000);
+                return false;
             }
         }
 
-        function saveAlbums() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(albums));
+        // ============================================================
+        //  LOCAL STORAGE (cache)
+        // ============================================================
+        function saveAlbumsToLocal() {
+            localStorage.setItem('imgbox_albums', JSON.stringify(albums));
         }
 
         // ============================================================
@@ -771,16 +919,27 @@
             }
             empty.classList.add('hidden');
 
-            grid.innerHTML = albums.map(album => `
-                    <div class="album-card" data-id="${album.id}" onclick="openAlbum('${album.id}')">
-                        <img class="cover" src="${album.cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23222%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2240%22%3E🖼%3C/text%3E%3C/svg%3E'}" alt="${album.name}" />
-                        <div class="info">
-                            <h3>${album.name}</h3>
-                            <div class="meta">${album.images.length} gambar · ${album.date}</div>
-                            <span class="badge">📂 ${album.id}</span>
+            const baseUrl = `https://${GITHUB_REPO.split('/')[0]}.github.io/${GITHUB_REPO.split('/')[1]}`;
+
+            grid.innerHTML = albums.map(album => {
+                const coverUrl = album.cover ? `${baseUrl}/${album.cover}` :
+                    'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23222%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2240%22%3E🖼%3C/text%3E%3C/svg%3E';
+                return `
+                        <div class="album-card" data-id="${album.id}">
+                            <div onclick="openAlbum('${album.id}')">
+                                <img class="cover" src="${coverUrl}" alt="${album.name}" loading="lazy" />
+                                <div class="info">
+                                    <h3>${album.name}</h3>
+                                    <div class="meta">${album.images.length} gambar · ${album.date}</div>
+                                    <span class="badge">📂 ${album.id}</span>
+                                </div>
+                            </div>
+                            <button class="album-delete-btn" onclick="event.stopPropagation();confirmDeleteAlbumFromHome('${album.id}')" title="Hapus album">
+                                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+            }).join('');
         }
 
         // ============================================================
@@ -811,7 +970,7 @@
 
             const baseUrl = `https://${GITHUB_REPO.split('/')[0]}.github.io/${GITHUB_REPO.split('/')[1]}`;
 
-            grid.innerHTML = album.images.map((img, idx) => {
+            grid.innerHTML = album.images.map((img) => {
                 const filename = img.split('/').pop();
                 const fullUrl = `${baseUrl}/${img}`;
                 const isSelected = selectedImages.has(img);
@@ -860,7 +1019,7 @@
         // ============================================================
         //  ALBUM
         // ============================================================
-        function createNewAlbum() {
+        async function createNewAlbum() {
             const name = prompt('Nama album:');
             if (!name || name.trim() === '') return;
 
@@ -876,22 +1035,50 @@
             };
 
             albums.unshift(album);
-            saveAlbums();
-            renderHome();
-            openAlbum(album.id);
-            showToast('✅ Album "' + album.name + '" dibuat!');
+            saveAlbumsToLocal();
+
+            const success = await saveAlbumsToGitHub();
+            if (success) {
+                renderHome();
+                openAlbum(album.id);
+                showToast('✅ Album "' + album.name + '" dibuat!');
+            } else {
+                // Rollback
+                albums = albums.filter(a => a.id !== album.id);
+                saveAlbumsToLocal();
+                renderHome();
+            }
         }
 
-        function deleteAlbum(id) {
-            if (!confirm('Yakin hapus album ini beserta semua gambarnya?')) return;
-            albums = albums.filter(a => a.id !== id);
-            saveAlbums();
-            goHome();
-            showToast('🗑️ Album dihapus');
+        function confirmDeleteAlbumFromHome(albumId) {
+            const album = albums.find(a => a.id === albumId);
+            if (!album) return;
+
+            pendingDeleteTarget = { type: 'album', albumId, album };
+            pendingDeleteType = 'album';
+
+            document.getElementById('modalTitle').textContent = 'Hapus Album';
+            document.getElementById('modalMessage').textContent =
+                `Yakin ingin menghapus album "${album.name}" beserta ${album.images.length} gambarnya?`;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function confirmDeleteAlbum() {
+            if (!currentAlbumId) return;
+            const album = albums.find(a => a.id === currentAlbumId);
+            if (!album) return;
+
+            pendingDeleteTarget = { type: 'album', albumId: currentAlbumId, album };
+            pendingDeleteType = 'album';
+
+            document.getElementById('modalTitle').textContent = 'Hapus Album';
+            document.getElementById('modalMessage').textContent =
+                `Yakin ingin menghapus album "${album.name}" beserta ${album.images.length} gambarnya?`;
+            document.getElementById('confirmModal').classList.add('active');
         }
 
         // ============================================================
-        //  UPLOAD GAMBAR (via GitHub API)
+        //  UPLOAD GAMBAR
         // ============================================================
         async function handleFileUpload(e) {
             const files = e.target.files;
@@ -901,16 +1088,17 @@
             const album = albums.find(a => a.id === currentAlbumId);
             if (!album) return;
 
-            const albumFolder = `img/${album.id}`;
-            const baseUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
-
             if (!GITHUB_TOKEN) {
-                showToast('⚠️ Token belum disimpan! Masukkan token di header.', 4000);
+                showToast('⚠️ Token belum disimpan!', 4000);
                 return;
             }
 
-            showToast('⏳ Uploading...', 2000);
+            const albumFolder = `img/${album.id}`;
+            const baseUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
 
+            showToast(`⏳ Uploading ${files.length} gambar...`, 3000);
+
+            let uploaded = 0;
             for (const file of files) {
                 try {
                     const ext = file.name.split('.').pop();
@@ -944,6 +1132,7 @@
                     }
 
                     album.images.push(path);
+                    uploaded++;
 
                 } catch (err) {
                     console.error(err);
@@ -951,76 +1140,88 @@
                 }
             }
 
-            // Update cover jika belum ada
+            if (uploaded === 0) {
+                showToast('❌ Gagal upload semua gambar', 3000);
+                return;
+            }
+
             if (!album.cover && album.images.length > 0) {
                 album.cover = album.images[0];
             }
-
-            // Update date
             album.date = new Date().toISOString().split('T')[0];
 
-            saveAlbums();
-            renderDetail(currentAlbumId);
-            document.getElementById('fileInput').value = '';
-            showToast(`✅ ${files.length} gambar berhasil diupload!`);
+            saveAlbumsToLocal();
+            const success = await saveAlbumsToGitHub();
+
+            if (success) {
+                renderDetail(currentAlbumId);
+                document.getElementById('fileInput').value = '';
+                showToast(`✅ ${uploaded} gambar berhasil diupload!`);
+            } else {
+                // Rollback gambar yang sudah diupload
+                for (let i = 0; i < uploaded; i++) {
+                    album.images.pop();
+                }
+                saveAlbumsToLocal();
+                renderDetail(currentAlbumId);
+                showToast('❌ Gagal simpan data album', 3000);
+            }
         }
 
         // ============================================================
-        //  DELETE GAMBAR (via GitHub API)
+        //  DELETE ALBUM (full)
         // ============================================================
-        async function deleteImageFromRepo(path) {
+        async function executeDeleteAlbum(albumId, album) {
             if (!GITHUB_TOKEN) {
                 showToast('⚠️ Token belum disimpan!', 4000);
                 return false;
             }
 
             try {
-                // Dapatkan SHA file
-                const shaRes = await fetch(
-                    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`, {
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`
+                // Hapus semua gambar di album
+                const baseUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
+
+                for (const imgPath of album.images) {
+                    try {
+                        const shaRes = await fetch(`${baseUrl}/${imgPath}?ref=${GITHUB_BRANCH}`, {
+                            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                        });
+
+                        if (shaRes.ok) {
+                            const shaData = await shaRes.json();
+                            await fetch(`${baseUrl}/${imgPath}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `token ${GITHUB_TOKEN}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    message: `Delete ${imgPath.split('/').pop()}`,
+                                    sha: shaData.sha,
+                                    branch: GITHUB_BRANCH
+                                })
+                            });
                         }
+                    } catch (err) {
+                        console.warn('Gagal hapus file:', imgPath, err);
                     }
-                );
-
-                if (!shaRes.ok) {
-                    // File mungkin sudah tidak ada
-                    return true;
                 }
 
-                const shaData = await shaRes.json();
-
-                const deleteRes = await fetch(
-                    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `Delete ${path.split('/').pop()}`,
-                            sha: shaData.sha,
-                            branch: GITHUB_BRANCH
-                        })
-                    }
-                );
-
-                if (!deleteRes.ok) {
-                    const err = await deleteRes.json();
-                    throw new Error(err.message || 'Gagal hapus');
-                }
+                // Hapus album dari data
+                albums = albums.filter(a => a.id !== albumId);
+                saveAlbumsToLocal();
+                await saveAlbumsToGitHub();
 
                 return true;
             } catch (err) {
                 console.error(err);
-                showToast('❌ Gagal hapus: ' + path.split('/').pop(), 3000);
+                showToast('❌ Gagal hapus album: ' + err.message, 3000);
                 return false;
             }
         }
 
         // ============================================================
-        //  DELETE: Single
+        //  DELETE: Single Image
         // ============================================================
         function confirmDeleteSingle(imgPath) {
             const album = albums.find(a => a.id === currentAlbumId);
@@ -1036,7 +1237,7 @@
         }
 
         // ============================================================
-        //  DELETE: Multiple
+        //  DELETE: Multiple Images
         // ============================================================
         function confirmDeleteSelected() {
             if (selectedImages.size === 0) return;
@@ -1062,6 +1263,18 @@
             const target = pendingDeleteTarget;
             if (!target) return;
 
+            if (target.type === 'album') {
+                const { albumId, album } = target;
+                const success = await executeDeleteAlbum(albumId, album);
+                if (success) {
+                    goHome();
+                    showToast('🗑️ Album dihapus');
+                }
+                pendingDeleteTarget = null;
+                pendingDeleteType = '';
+                return;
+            }
+
             if (target.type === 'single') {
                 const { imgPath, album } = target;
                 const success = await deleteImageFromRepo(imgPath);
@@ -1070,7 +1283,8 @@
                     if (album.cover === imgPath) {
                         album.cover = album.images[0] || '';
                     }
-                    saveAlbums();
+                    saveAlbumsToLocal();
+                    await saveAlbumsToGitHub();
                     renderDetail(currentAlbumId);
                     showToast('🗑️ Gambar dihapus');
                 }
@@ -1087,7 +1301,8 @@
                         successCount++;
                     }
                 }
-                saveAlbums();
+                saveAlbumsToLocal();
+                await saveAlbumsToGitHub();
                 renderDetail(currentAlbumId);
                 selectedImages.clear();
                 updateDeleteButton();
@@ -1096,6 +1311,44 @@
 
             pendingDeleteTarget = null;
             pendingDeleteType = '';
+        }
+
+        // ============================================================
+        //  DELETE IMAGE FROM REPO
+        // ============================================================
+        async function deleteImageFromRepo(path) {
+            if (!GITHUB_TOKEN) return false;
+
+            try {
+                const shaRes = await fetch(
+                    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`, {
+                        headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                    }
+                );
+
+                if (!shaRes.ok) return true;
+
+                const shaData = await shaRes.json();
+                const deleteRes = await fetch(
+                    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Delete ${path.split('/').pop()}`,
+                            sha: shaData.sha,
+                            branch: GITHUB_BRANCH
+                        })
+                    }
+                );
+
+                return deleteRes.ok;
+            } catch (err) {
+                console.error(err);
+                return false;
+            }
         }
 
         // ============================================================
@@ -1108,7 +1361,6 @@
                 selectedImages.add(imgPath);
             }
 
-            // Update UI
             const items = document.querySelectorAll('.image-item');
             items.forEach(item => {
                 const img = item.dataset.img;
@@ -1193,7 +1445,6 @@
             pendingDeleteType = '';
         }
 
-        // Click outside modal
         document.getElementById('confirmModal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) closeModal();
         });
@@ -1221,19 +1472,21 @@
         });
 
         // ============================================================
-        //  EXPOSE KE GLOBAL (buat onclick di HTML)
+        //  EXPOSE GLOBAL
         // ============================================================
         window.openAlbum = openAlbum;
         window.goHome = goHome;
         window.toggleImageSelect = toggleImageSelect;
         window.confirmDeleteSingle = confirmDeleteSingle;
         window.confirmDeleteSelected = confirmDeleteSelected;
+        window.confirmDeleteAlbum = confirmDeleteAlbum;
+        window.confirmDeleteAlbumFromHome = confirmDeleteAlbumFromHome;
         window.copyUrl = copyUrl;
         window.closeModal = closeModal;
         window.executeDelete = executeDelete;
         window.createNewAlbum = createNewAlbum;
-        window.deleteAlbum = deleteAlbum;
         window.saveToken = saveToken;
+        window.refreshData = refreshData;
     </script>
 
 </body>
