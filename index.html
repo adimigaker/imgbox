@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>imgbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d0d;
+            color: #e5e5e5;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.light {
+            background: #f5f5f5;
+            color: #1a1a1a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 span {
+            color: #6c63ff;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #2a2a2a;
+            color: #e5e5e5;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.2);
+        }
+
+        .btn-primary {
+            background: #6c63ff;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .btn-danger:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #444;
+            color: #e5e5e5;
+        }
+
+        body.light .btn-outline {
+            border-color: #ccc;
+            color: #1a1a1a;
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 12px;
+        }
+
+        /* ===== ALBUM GRID (Home) ===== */
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .album-card {
+            background: #1a1a1a;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #2a2a2a;
+        }
+
+        body.light .album-card {
+            background: #fff;
+            border-color: #e0e0e0;
+        }
+
+        .album-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .album-card .cover {
+            width: 100%;
+            aspect-ratio: 16/10;
+            object-fit: cover;
+            background: #222;
+        }
+
+        .album-card .info {
+            padding: 14px 16px;
+        }
+
+        .album-card .info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .album-card .info .meta {
+            font-size: 13px;
+            color: #888;
+        }
+
+        body.light .album-card .info .meta {
+            color: #666;
+        }
+
+        .album-card .info .badge {
+            display: inline-block;
+            background: #2a2a2a;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        body.light .album-card .info .badge {
+            background: #eee;
+        }
+
+        /* ===== DETAIL VIEW ===== */
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .detail-header .left h2 {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .detail-header .left .sub {
+            color: #888;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        body.light .detail-header .left .sub {
+            color: #666;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #6c63ff;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 0;
+        }
+
+        /* ===== IMAGE GRID (Detail) ===== */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .image-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .image-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .image-item {
+            background: #161616;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2a2a2a;
+            transition: border-color 0.2s;
+            position: relative;
+        }
+
+        body.light .image-item {
+            background: #fff;
+            border-color: #e0e0e0;
+        }
+
+        .image-item.selected {
+            border-color: #6c63ff;
+        }
+
+        .image-wrapper {
+            position: relative;
+            aspect-ratio: 1/1;
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Overlay Icons */
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .image-wrapper:hover .image-overlay,
+        .image-item .image-overlay.always-show {
+            opacity: 1;
+        }
+
+        .image-overlay>* {
+            pointer-events: auto;
+        }
+
+        /* Checkbox SVG */
+        .checkbox-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .checkbox-btn:hover {
+            background: rgba(108, 99, 255, 0.6);
+            border-color: #6c63ff;
+        }
+
+        .checkbox-btn.checked {
+            background: #6c63ff;
+            border-color: #6c63ff;
+        }
+
+        .checkbox-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: white;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: none;
+        }
+
+        .checkbox-btn.checked svg {
+            display: block;
+        }
+
+        /* Delete X SVG */
+        .delete-btn {
+            background: rgba(220, 53, 69, 0.85);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.1);
+            background: #dc3545;
+        }
+
+        .delete-btn svg {
+            width: 14px;
+            height: 14px;
+            stroke: white;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+        }
+
+        /* Image Info (filename + URL) */
+        .image-info {
+            padding: 10px 12px 12px;
+        }
+
+        .image-info .filename {
+            font-size: 12px;
+            font-weight: 500;
+            color: #aaa;
+            display: block;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        body.light .image-info .filename {
+            color: #555;
+        }
+
+        .image-info .url-copy {
+            font-size: 11px;
+            color: #6c63ff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(108, 99, 255, 0.08);
+            transition: background 0.2s;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-family: 'Courier New', monospace;
+        }
+
+        body.light .image-info .url-copy {
+            background: rgba(108, 99, 255, 0.06);
+        }
+
+        .image-info .url-copy:hover {
+            background: rgba(108, 99, 255, 0.15);
+        }
+
+        .image-info .url-copy svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .image-info .url-copy .url-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+
+        body.light .empty-state h3 {
+            color: #444;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a1a;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            padding: 28px 32px;
+            border: 1px solid #2a2a2a;
+        }
+
+        body.light .modal {
+            background: #fff;
+            border-color: #e0e0e0;
+        }
+
+        .modal h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .modal p {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        body.light .modal p {
+            color: #666;
+        }
+
+        .modal .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1a1a1a;
+            color: #e5e5e5;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 1px solid #2a2a2a;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.light .toast {
+            background: #fff;
+            color: #1a1a1a;
+            border-color: #e0e0e0;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== TOGGLE ===== */
+        .toggle-theme {
+            background: none;
+            border: none;
+            color: #e5e5e5;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        body.light .toggle-theme {
+            color: #1a1a1a;
+        }
+
+        /* ===== HIDDEN ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===== UPLOAD INPUT ===== */
+        #fileInput {
+            display: none;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
+        body.light ::-webkit-scrollbar-track {
+            background: #eee;
+        }
+        body.light ::-webkit-scrollbar-thumb {
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="app">
+        <!-- HEADER -->
+        <header class="header">
+            <h1>📦 img<span>box</span></h1>
+            <div class="header-actions">
+                <button class="toggle-theme" id="themeToggle" title="Toggle theme">🌙</button>
+                <button class="btn btn-primary" id="addAlbumBtn">+ Album Baru</button>
+            </div>
+        </header>
+
+        <!-- HOME VIEW -->
+        <div id="homeView">
+            <div id="albumGrid" class="album-grid"></div>
+            <div id="emptyAlbum" class="empty-state hidden">
+                <div class="icon">🖼️</div>
+                <h3>Belum ada album</h3>
+                <p style="color:#888;font-size:14px;">Klik "Album Baru" untuk mulai upload gambar</p>
+            </div>
+        </div>
+
+        <!-- DETAIL VIEW -->
+        <div id="detailView" class="hidden">
+            <div class="detail-header">
+                <div class="left">
+                    <button class="back-btn" id="backHomeBtn">← Kembali</button>
+                    <h2 id="detailTitle">Album</h2>
+                    <div class="sub" id="detailSub">0 gambar</div>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" id="addImageBtn">+ Tambah Gambar</button>
+                    <button class="btn btn-danger btn-sm" id="deleteSelectedBtn" disabled>🗑️ Hapus (<span id="selectedCount">0</span>)</button>
+                </div>
+            </div>
+
+            <div id="imageGrid" class="image-grid"></div>
+            <div id="emptyImage" class="empty-state hidden">
+                <div class="icon">📷</div>
+                <h3>Belum ada gambar</h3>
+                <p style="color:#888;font-size:14px;">Klik "Tambah Gambar" untuk upload</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <h3 id="modalTitle">Konfirmasi</h3>
+            <p id="modalMessage">Yakin ingin menghapus?</p>
+            <div class="actions">
+                <button class="btn btn-outline" id="modalCancel">Batal</button>
+                <button class="btn btn-danger" id="modalConfirm">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- FILE INPUT -->
+    <input type="file" id="fileInput" accept="image/*" multiple />
+
+    <script>
+        // ============================================================
+        //  DATA
+        // ============================================================
+        const STORAGE_KEY = 'imgbox_albums';
+        const GITHUB_REPO = 'username/imgbox'; // <-- GANTI DENGAN REPO KAMU
+        const GITHUB_BRANCH = 'main';
+        const GITHUB_TOKEN = ''; // <-- ISI DENGAN PERSONAL ACCESS TOKEN
+
+        let albums = [];
+        let currentAlbumId = null;
+        let selectedImages = new Set();
+        let pendingDeleteTarget = null;
+        let pendingDeleteType = ''; // 'single' | 'multiple'
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAlbums();
+            renderHome();
+
+            // Theme
+            const savedTheme = localStorage.getItem('imgbox_theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light');
+                document.getElementById('themeToggle').textContent = '☀️';
+            }
+
+            // Event listeners
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('addAlbumBtn').addEventListener('click', createNewAlbum);
+            document.getElementById('backHomeBtn').addEventListener('click', goHome);
+            document.getElementById('addImageBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+            document.getElementById('deleteSelectedBtn').addEventListener('click', confirmDeleteSelected);
+            document.getElementById('modalCancel').addEventListener('click', closeModal);
+            document.getElementById('modalConfirm').addEventListener('click', executeDelete);
+        });
+
+        // ============================================================
+        //  DATA PERSISTENCE (LocalStorage)
+        // ============================================================
+        function loadAlbums() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                albums = data ? JSON.parse(data) : [];
+            } catch {
+                albums = [];
+            }
+        }
+
+        function saveAlbums() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(albums));
+        }
+
+        // ============================================================
+        //  RENDER: HOME
+        // ============================================================
+        function renderHome() {
+            const grid = document.getElementById('albumGrid');
+            const empty = document.getElementById('emptyAlbum');
+
+            if (albums.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            grid.innerHTML = albums.map(album => `
+                    <div class="album-card" data-id="${album.id}" onclick="openAlbum('${album.id}')">
+                        <img class="cover" src="${album.cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23222%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2240%22%3E🖼%3C/text%3E%3C/svg%3E'}" alt="${album.name}" />
+                        <div class="info">
+                            <h3>${album.name}</h3>
+                            <div class="meta">${album.images.length} gambar · ${album.date}</div>
+                            <span class="badge">📂 ${album.id}</span>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // ============================================================
+        //  RENDER: DETAIL
+        // ============================================================
+        function renderDetail(albumId) {
+            const album = albums.find(a => a.id === albumId);
+            if (!album) return goHome();
+
+            currentAlbumId = albumId;
+            selectedImages.clear();
+            updateDeleteButton();
+
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('detailView').classList.remove('hidden');
+            document.getElementById('detailTitle').textContent = album.name;
+            document.getElementById('detailSub').textContent = `${album.images.length} gambar · ${album.date}`;
+
+            const grid = document.getElementById('imageGrid');
+            const empty = document.getElementById('emptyImage');
+
+            if (album.images.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            const baseUrl = `https://${GITHUB_REPO.split('/')[0]}.github.io/${GITHUB_REPO.split('/')[1]}`;
+
+            grid.innerHTML = album.images.map((img, idx) => {
+                const filename = img.split('/').pop();
+                const fullUrl = `${baseUrl}/${img}`;
+                const isSelected = selectedImages.has(img);
+                return `
+                        <div class="image-item ${isSelected ? 'selected' : ''}" data-img="${img}">
+                            <div class="image-wrapper">
+                                <img src="${fullUrl}" alt="${filename}" loading="lazy" />
+                                <div class="image-overlay always-show">
+                                    <button class="checkbox-btn ${isSelected ? 'checked' : ''}" onclick="toggleImageSelect('${img}')">
+                                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
+                                    </button>
+                                    <button class="delete-btn" onclick="confirmDeleteSingle('${img}')">
+                                        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="image-info">
+                                <span class="filename">${filename}</span>
+                                <div class="url-copy" onclick="copyUrl('${fullUrl}', this)">
+                                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    <span class="url-text">${fullUrl}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            }).join('');
+        }
+
+        // ============================================================
+        //  NAVIGASI
+        // ============================================================
+        function openAlbum(id) {
+            renderDetail(id);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goHome() {
+            document.getElementById('detailView').classList.add('hidden');
+            document.getElementById('homeView').classList.remove('hidden');
+            renderHome();
+            currentAlbumId = null;
+            selectedImages.clear();
+            document.getElementById('fileInput').value = '';
+        }
+
+        // ============================================================
+        //  ALBUM
+        // ============================================================
+        function createNewAlbum() {
+            const name = prompt('Nama album:');
+            if (!name || name.trim() === '') return;
+
+            const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'album';
+            const now = new Date().toISOString().split('T')[0];
+
+            const album = {
+                id: `${id}-${Date.now().toString(36)}`,
+                name: name.trim(),
+                date: now,
+                cover: '',
+                images: []
+            };
+
+            albums.unshift(album);
+            saveAlbums();
+            renderHome();
+            openAlbum(album.id);
+            showToast('✅ Album "' + album.name + '" dibuat!');
+        }
+
+        function deleteAlbum(id) {
+            if (!confirm('Yakin hapus album ini beserta semua gambarnya?')) return;
+            albums = albums.filter(a => a.id !== id);
+            saveAlbums();
+            goHome();
+            showToast('🗑️ Album dihapus');
+        }
+
+        // ============================================================
+        //  UPLOAD GAMBAR (via GitHub API)
+        // ============================================================
+        async function handleFileUpload(e) {
+            const files = e.target.files;
+            if (!files.length) return;
+            if (!currentAlbumId) return;
+
+            const album = albums.find(a => a.id === currentAlbumId);
+            if (!album) return;
+
+            const albumFolder = `img/${album.id}`;
+            const baseUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
+
+            if (!GITHUB_TOKEN) {
+                showToast('⚠️ GITHUB_TOKEN belum diisi!', 4000);
+                return;
+            }
+
+            showToast('⏳ Uploading...', 2000);
+
+            for (const file of files) {
+                try {
+                    const ext = file.name.split('.').pop();
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                    const cleanName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    const filename = `${timestamp}-${cleanName}.${ext}`;
+                    const path = `${albumFolder}/${filename}`;
+
+                    const reader = new FileReader();
+                    const content = await new Promise((resolve) => {
+                        reader.onload = () => resolve(reader.result.split(',')[1]);
+                        reader.readAsDataURL(file);
+                    });
+
+                    const response = await fetch(`${baseUrl}/${path}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Upload ${filename}`,
+                            content: content,
+                            branch: GITHUB_BRANCH
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.message || 'Upload gagal');
+                    }
+
+                    album.images.push(path);
+
+                } catch (err) {
+                    console.error(err);
+                    showToast('❌ Gagal upload: ' + file.name, 3000);
+                }
+            }
+
+            // Update cover jika belum ada
+            if (!album.cover && album.images.length > 0) {
+                album.cover = album.images[0];
+            }
+
+            // Update date
+            album.date = new Date().toISOString().split('T')[0];
+
+            saveAlbums();
+            renderDetail(currentAlbumId);
+            document.getElementById('fileInput').value = '';
+            showToast(`✅ ${files.length} gambar berhasil diupload!`);
+        }
+
+        // ============================================================
+        //  DELETE GAMBAR (via GitHub API)
+        // ============================================================
+        async function deleteImageFromRepo(path) {
+            if (!GITHUB_TOKEN) {
+                showToast('⚠️ GITHUB_TOKEN belum diisi!', 4000);
+                return false;
+            }
+
+            try {
+                // Dapatkan SHA file
+                const shaRes = await fetch(
+                    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`, {
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`
+                        }
+                    }
+                );
+
+                if (!shaRes.ok) {
+                    // File mungkin sudah tidak ada
+                    return true;
+                }
+
+                const shaData = await shaRes.json();
+
+                const deleteRes = await fetch(
+                    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Delete ${path.split('/').pop()}`,
+                            sha: shaData.sha,
+                            branch: GITHUB_BRANCH
+                        })
+                    }
+                );
+
+                if (!deleteRes.ok) {
+                    const err = await deleteRes.json();
+                    throw new Error(err.message || 'Gagal hapus');
+                }
+
+                return true;
+            } catch (err) {
+                console.error(err);
+                showToast('❌ Gagal hapus: ' + path.split('/').pop(), 3000);
+                return false;
+            }
+        }
+
+        // ============================================================
+        //  DELETE: Single
+        // ============================================================
+        function confirmDeleteSingle(imgPath) {
+            const album = albums.find(a => a.id === currentAlbumId);
+            if (!album) return;
+
+            const filename = imgPath.split('/').pop();
+            pendingDeleteTarget = { type: 'single', imgPath, album };
+            pendingDeleteType = 'single';
+
+            document.getElementById('modalTitle').textContent = 'Hapus Gambar';
+            document.getElementById('modalMessage').textContent = `Yakin ingin menghapus "${filename}"?`;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        // ============================================================
+        //  DELETE: Multiple
+        // ============================================================
+        function confirmDeleteSelected() {
+            if (selectedImages.size === 0) return;
+
+            const album = albums.find(a => a.id === currentAlbumId);
+            if (!album) return;
+
+            pendingDeleteTarget = { type: 'multiple', paths: Array.from(selectedImages), album };
+            pendingDeleteType = 'multiple';
+
+            document.getElementById('modalTitle').textContent = 'Hapus Gambar Terpilih';
+            document.getElementById('modalMessage').textContent =
+                `Yakin ingin menghapus ${selectedImages.size} gambar?`;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        // ============================================================
+        //  EXECUTE DELETE
+        // ============================================================
+        async function executeDelete() {
+            closeModal();
+
+            const target = pendingDeleteTarget;
+            if (!target) return;
+
+            if (target.type === 'single') {
+                const { imgPath, album } = target;
+                const success = await deleteImageFromRepo(imgPath);
+                if (success) {
+                    album.images = album.images.filter(i => i !== imgPath);
+                    if (album.cover === imgPath) {
+                        album.cover = album.images[0] || '';
+                    }
+                    saveAlbums();
+                    renderDetail(currentAlbumId);
+                    showToast('🗑️ Gambar dihapus');
+                }
+            } else if (target.type === 'multiple') {
+                const { paths, album } = target;
+                let successCount = 0;
+                for (const path of paths) {
+                    const ok = await deleteImageFromRepo(path);
+                    if (ok) {
+                        album.images = album.images.filter(i => i !== path);
+                        if (album.cover === path) {
+                            album.cover = album.images[0] || '';
+                        }
+                        successCount++;
+                    }
+                }
+                saveAlbums();
+                renderDetail(currentAlbumId);
+                selectedImages.clear();
+                updateDeleteButton();
+                showToast(`🗑️ ${successCount} gambar dihapus`);
+            }
+
+            pendingDeleteTarget = null;
+            pendingDeleteType = '';
+        }
+
+        // ============================================================
+        //  TOGGLE SELECT
+        // ============================================================
+        function toggleImageSelect(imgPath) {
+            if (selectedImages.has(imgPath)) {
+                selectedImages.delete(imgPath);
+            } else {
+                selectedImages.add(imgPath);
+            }
+
+            // Update UI
+            const items = document.querySelectorAll('.image-item');
+            items.forEach(item => {
+                const img = item.dataset.img;
+                if (img === imgPath) {
+                    item.classList.toggle('selected');
+                    const btn = item.querySelector('.checkbox-btn');
+                    btn.classList.toggle('checked');
+                }
+            });
+
+            updateDeleteButton();
+        }
+
+        function updateDeleteButton() {
+            const count = selectedImages.size;
+            const btn = document.getElementById('deleteSelectedBtn');
+            const span = document.getElementById('selectedCount');
+            span.textContent = count;
+
+            if (count > 0) {
+                btn.disabled = false;
+                btn.innerHTML = `🗑️ Hapus (<span id="selectedCount">${count}</span>)`;
+            } else {
+                btn.disabled = true;
+                btn.innerHTML = `🗑️ Hapus (<span id="selectedCount">0</span>)`;
+            }
+        }
+
+        // ============================================================
+        //  COPY URL
+        // ============================================================
+        function copyUrl(url, element) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('✅ URL copied!');
+                }).catch(() => {
+                    fallbackCopy(url);
+                });
+            } else {
+                fallbackCopy(url);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('✅ URL copied!');
+            } catch {
+                showToast('❌ Gagal copy', 2000);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // ============================================================
+        //  TOAST
+        // ============================================================
+        let toastTimeout = null;
+
+        function showToast(message, duration = 2500) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // ============================================================
+        //  MODAL
+        // ============================================================
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            pendingDeleteTarget = null;
+            pendingDeleteType = '';
+        }
+
+        // Click outside modal
+        document.getElementById('confirmModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        // ============================================================
+        //  THEME
+        // ============================================================
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light');
+            const btn = document.getElementById('themeToggle');
+            btn.textContent = isLight ? '☀️' : '🌙';
+            localStorage.setItem('imgbox_theme', isLight ? 'light' : 'dark');
+        }
+
+        // ============================================================
+        //  KEYBOARD SHORTCUT
+        // ============================================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                if (!document.getElementById('detailView').classList.contains('hidden')) {
+                    goHome();
+                }
+            }
+        });
+
+        // ============================================================
+        //  EXPOSE KE GLOBAL (buat onclick di HTML)
+        // ============================================================
+        window.openAlbum = openAlbum;
+        window.goHome = goHome;
+        window.toggleImageSelect = toggleImageSelect;
+        window.confirmDeleteSingle = confirmDeleteSingle;
+        window.confirmDeleteSelected = confirmDeleteSelected;
+        window.copyUrl = copyUrl;
+        window.closeModal = closeModal;
+        window.executeDelete = executeDelete;
+        window.createNewAlbum = createNewAlbum;
+        window.deleteAlbum = deleteAlbum;
+    </script>
+
+</body>
+</html>
