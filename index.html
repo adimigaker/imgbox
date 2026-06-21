@@ -1196,6 +1196,32 @@
         </div>
     </div>
 
+    <!-- NEW ALBUM MODAL -->
+    <div class="modal-overlay" id="newAlbumModal">
+        <div class="modal">
+            <h3>
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+                Album Baru
+            </h3>
+            <p>Masukkan nama untuk album baru.</p>
+            <div class="form-group">
+                <label>Nama Album</label>
+                <input type="text" id="newAlbumNameInput" placeholder="Contoh: liburan bali" />
+            </div>
+            <div class="actions">
+                <button class="btn btn-outline" onclick="closeNewAlbumModal()">Batal</button>
+                <button class="btn btn-primary" id="newAlbumConfirmBtn">
+                    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Buat
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- CONFIRM MODAL -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal">
@@ -1326,7 +1352,14 @@
             }
 
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-            document.getElementById('addAlbumBtn').addEventListener('click', createNewAlbum);
+            document.getElementById('addAlbumBtn').addEventListener('click', openNewAlbumModal);
+            document.getElementById('newAlbumConfirmBtn').addEventListener('click', createNewAlbum);
+            document.getElementById('newAlbumNameInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') createNewAlbum();
+            });
+            document.getElementById('newAlbumModal').addEventListener('click', (e) => {
+                if (e.target.id === 'newAlbumModal') closeNewAlbumModal();
+            });
             document.getElementById('backHomeBtn').addEventListener('click', () => goHome());
             document.getElementById('addImageBtn').addEventListener('click', () => document.getElementById('fileInput').click());
             document.getElementById('fileInput').addEventListener('change', handleFileUpload);
@@ -1662,9 +1695,26 @@
         // ============================================================
         //  ALBUM
         // ============================================================
+        function openNewAlbumModal() {
+            const input = document.getElementById('newAlbumNameInput');
+            input.value = '';
+            document.getElementById('newAlbumModal').classList.add('active');
+            setTimeout(() => input.focus(), 150);
+        }
+
+        function closeNewAlbumModal() {
+            document.getElementById('newAlbumModal').classList.remove('active');
+        }
+
         async function createNewAlbum() {
-            const name = prompt('Nama album:');
-            if (!name || name.trim() === '') return;
+            const input = document.getElementById('newAlbumNameInput');
+            const name = input.value;
+            if (!name || name.trim() === '') {
+                showToast('Nama album tidak boleh kosong', 'warning');
+                return;
+            }
+
+            closeNewAlbumModal();
 
             const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'album';
             const now = new Date().toISOString().split('T')[0];
@@ -2382,6 +2432,8 @@
         window.saveTokenFromModal = saveTokenFromModal;
         window.executeDelete = executeDelete;
         window.createNewAlbum = createNewAlbum;
+        window.openNewAlbumModal = openNewAlbumModal;
+        window.closeNewAlbumModal = closeNewAlbumModal;
         window.refreshData = refreshData;
         window.openLightbox = openLightbox;
         window.closeLightbox = closeLightbox;
