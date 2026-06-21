@@ -37,14 +37,17 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 30px;
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .header h1 span {
@@ -53,17 +56,17 @@
 
         .header-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             flex-wrap: wrap;
         }
 
         /* ===== BUTTON ===== */
         .btn {
-            padding: 8px 18px;
+            padding: 8px 16px;
             border: none;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s ease;
@@ -73,6 +76,7 @@
             background: #2a2a2a;
             color: #e5e5e5;
             text-decoration: none;
+            font-family: inherit;
         }
 
         .btn:hover {
@@ -139,79 +143,63 @@
         }
 
         .btn-sm {
-            padding: 5px 12px;
+            padding: 5px 10px;
             font-size: 12px;
             border-radius: 8px;
         }
 
-        /* ===== TOKEN INPUT ===== */
-        .token-wrapper {
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: #1a1a1a;
-            border-radius: 10px;
-            padding: 2px 8px 2px 12px;
-            border: 1.5px solid #333;
-            transition: all 0.3s;
-        }
-
-        body.light .token-wrapper {
-            background: #fff;
-            border-color: #ddd;
-        }
-
-        .token-wrapper:focus-within {
-            border-color: #6c63ff;
-        }
-
-        .token-wrapper .token-status {
-            font-size: 14px;
-            line-height: 1;
-        }
-
-        .token-input {
+            justify-content: center;
+            border-radius: 50%;
             background: transparent;
-            border: none;
+            border: 1.5px solid #333;
             color: #e5e5e5;
-            font-size: 12px;
-            padding: 6px 0;
-            width: 160px;
-            outline: none;
-            font-family: monospace;
         }
 
-        body.light .token-input {
+        body.light .btn-icon {
+            border-color: #ccc;
             color: #1a1a1a;
         }
 
-        .token-input::placeholder {
-            color: #666;
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
         }
 
-        .token-wrapper.token-saved {
+        body.light .btn-icon:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .btn-icon.token-active {
             border-color: #28a745;
-        }
-
-        .token-wrapper.token-saved .token-status {
             color: #28a745;
         }
 
-        @media (max-width: 600px) {
-            .token-input {
-                width: 100px;
-                font-size: 11px;
-            }
-            .token-wrapper {
-                padding: 2px 6px 2px 10px;
-            }
+        .btn-icon.token-inactive {
+            border-color: #dc3545;
+            color: #dc3545;
         }
 
         /* ===== ALBUM GRID ===== */
         .album-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
             margin-top: 20px;
         }
 
@@ -244,13 +232,13 @@
         }
 
         .album-card .info {
-            padding: 14px 16px 16px;
+            padding: 12px 14px 14px;
         }
 
         .album-card .info h3 {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -270,9 +258,10 @@
             background: #2a2a2a;
             padding: 2px 10px;
             border-radius: 20px;
-            font-size: 11px;
-            margin-top: 6px;
+            font-size: 10px;
+            margin-top: 5px;
             color: #999;
+            font-family: monospace;
         }
 
         body.light .album-card .info .badge {
@@ -283,13 +272,13 @@
         /* Hapus album button di card */
         .album-delete-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background: rgba(220, 53, 69, 0.9);
             border: none;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -306,12 +295,11 @@
 
         .album-delete-btn:hover {
             transform: scale(1.15);
-            background: #dc3545;
         }
 
         .album-delete-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             stroke: white;
             stroke-width: 2.5;
             stroke-linecap: round;
@@ -324,18 +312,18 @@
             align-items: flex-start;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .detail-header .left h2 {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
         }
 
         .detail-header .left .sub {
             color: #888;
-            font-size: 14px;
-            margin-top: 4px;
+            font-size: 13px;
+            margin-top: 3px;
         }
 
         body.light .detail-header .left .sub {
@@ -346,7 +334,7 @@
             background: none;
             border: none;
             color: #6c63ff;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             font-weight: 600;
             display: inline-flex;
@@ -362,7 +350,7 @@
 
         .detail-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
@@ -370,8 +358,8 @@
         .image-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-top: 16px;
+            gap: 14px;
+            margin-top: 14px;
         }
 
         @media (min-width: 600px) {
@@ -404,6 +392,11 @@
             box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.15);
         }
 
+        .image-item.uploading {
+            opacity: 0.6;
+            border-color: #ffc107;
+        }
+
         .image-wrapper {
             position: relative;
             aspect-ratio: 1/1;
@@ -423,7 +416,55 @@
             transform: scale(1.03);
         }
 
-        /* Overlay */
+        /* Upload progress overlay */
+        .upload-progress {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            backdrop-filter: blur(4px);
+        }
+
+        .upload-progress.active {
+            display: flex;
+        }
+
+        .upload-progress .progress-ring {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #6c63ff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .upload-progress .progress-text {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .upload-progress .progress-bar-track {
+            width: 80%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .upload-progress .progress-bar-fill {
+            height: 100%;
+            background: #6c63ff;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Overlay Icons */
         .image-overlay {
             position: absolute;
             top: 0;
@@ -432,7 +473,7 @@
             bottom: 0;
             display: flex;
             justify-content: space-between;
-            padding: 8px;
+            padding: 7px;
             pointer-events: none;
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, transparent 55%);
             opacity: 0;
@@ -453,8 +494,8 @@
             background: rgba(0, 0, 0, 0.65);
             border: 2px solid rgba(255, 255, 255, 0.5);
             border-radius: 8px;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -477,8 +518,8 @@
         }
 
         .checkbox-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             fill: none;
             stroke: white;
             stroke-width: 3;
@@ -496,8 +537,8 @@
             background: rgba(220, 53, 69, 0.88);
             border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -510,12 +551,11 @@
 
         .delete-btn:hover {
             transform: scale(1.12);
-            background: #dc3545;
         }
 
         .delete-btn svg {
-            width: 14px;
-            height: 14px;
+            width: 13px;
+            height: 13px;
             stroke: white;
             stroke-width: 2.5;
             stroke-linecap: round;
@@ -523,15 +563,15 @@
 
         /* Image Info */
         .image-info {
-            padding: 10px 12px 12px;
+            padding: 8px 10px 10px;
         }
 
         .image-info .filename {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             color: #999;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -542,14 +582,14 @@
         }
 
         .image-info .url-copy {
-            font-size: 11px;
+            font-size: 10px;
             color: #6c63ff;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            border-radius: 8px;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
             background: rgba(108, 99, 255, 0.08);
             transition: all 0.2s ease;
             overflow: hidden;
@@ -564,16 +604,17 @@
 
         .image-info .url-copy:hover {
             background: rgba(108, 99, 255, 0.16);
-            transform: scale(1.01);
         }
 
         .image-info .url-copy svg {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             flex-shrink: 0;
             stroke: currentColor;
             fill: none;
             stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .image-info .url-copy .url-text {
@@ -584,20 +625,20 @@
         /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 50px 20px;
             color: #666;
         }
 
         .empty-state .icon {
-            font-size: 56px;
-            margin-bottom: 16px;
+            font-size: 48px;
+            margin-bottom: 14px;
             opacity: 0.6;
         }
 
         .empty-state h3 {
-            font-size: 20px;
+            font-size: 18px;
             color: #aaa;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         body.light .empty-state h3 {
@@ -606,7 +647,7 @@
 
         .empty-state p {
             color: #777;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         /* ===== MODAL ===== */
@@ -639,9 +680,9 @@
         .modal {
             background: #1a1a1a;
             border-radius: 18px;
-            max-width: 480px;
+            max-width: 460px;
             width: 100%;
-            padding: 30px 32px;
+            padding: 28px 30px;
             border: 1px solid #2a2a2a;
             animation: slideUp 0.3s ease;
         }
@@ -663,19 +704,67 @@
         }
 
         .modal h3 {
-            font-size: 20px;
-            margin-bottom: 6px;
+            font-size: 19px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .modal p {
             color: #888;
             font-size: 14px;
-            margin-bottom: 22px;
+            margin-bottom: 18px;
             line-height: 1.5;
         }
 
         body.light .modal p {
             color: #666;
+        }
+
+        .modal .form-group {
+            margin-bottom: 16px;
+        }
+
+        .modal .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #aaa;
+        }
+
+        body.light .modal .form-group label {
+            color: #555;
+        }
+
+        .modal .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1.5px solid #333;
+            background: #141414;
+            color: #e5e5e5;
+            font-size: 14px;
+            font-family: monospace;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        body.light .modal .form-group input {
+            background: #f5f5f5;
+            border-color: #ddd;
+            color: #1a1a1a;
+        }
+
+        .modal .form-group input:focus {
+            border-color: #6c63ff;
+        }
+
+        .modal .form-group .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
         }
 
         .modal .actions {
@@ -695,7 +784,7 @@
             padding: 12px 24px;
             border-radius: 12px;
             border: 1px solid #2a2a2a;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             z-index: 1000;
             opacity: 0;
@@ -733,9 +822,9 @@
             background: none;
             border: none;
             color: #e5e5e5;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 4px 6px;
             transition: transform 0.3s ease;
         }
 
@@ -758,7 +847,7 @@
 
         /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
         ::-webkit-scrollbar-track {
             background: #141414;
@@ -787,13 +876,13 @@
 
         .loading .spinner {
             display: inline-block;
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border: 3px solid #2a2a2a;
             border-top-color: #6c63ff;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         body.light .loading .spinner {
@@ -807,14 +896,72 @@
             }
         }
 
-        .btn .spinner-sm {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+        /* ===== UPLOAD STATUS ===== */
+        .upload-status {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 16px 24px;
+            min-width: 280px;
+            max-width: 90%;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        body.light .upload-status {
+            background: #fff;
+            border-color: #e8e8e8;
+        }
+
+        .upload-status.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .upload-status .status-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-status .status-bar {
+            width: 100%;
+            height: 5px;
+            background: #2a2a2a;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        body.light .upload-status .status-bar {
+            background: #e8e8e8;
+        }
+
+        .upload-status .status-bar .fill {
+            height: 100%;
+            background: #6c63ff;
+            border-radius: 5px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .upload-status .status-detail {
+            font-size: 12px;
+            color: #888;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        body.light .upload-status .status-detail {
+            color: #666;
         }
     </style>
 </head>
@@ -825,15 +972,15 @@
         <header class="header">
             <h1>📦 img<span>box</span></h1>
             <div class="header-actions">
-                <!-- TOKEN INPUT -->
-                <div class="token-wrapper" id="tokenWrapper">
-                    <span class="token-status" id="tokenStatus">🔑</span>
-                    <input type="password" class="token-input" id="tokenInput" placeholder="Token GitHub" />
-                </div>
-                <button class="btn btn-success btn-sm" onclick="saveToken()" id="saveTokenBtn">💾</button>
+                <button class="btn-icon" id="tokenBtn" onclick="openTokenModal()" title="Token GitHub">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </button>
                 <button class="toggle-theme" id="themeToggle" title="Toggle theme">🌙</button>
-                <button class="btn btn-primary" id="addAlbumBtn">+ Album Baru</button>
-                <button class="btn btn-outline btn-sm" onclick="refreshData()" id="refreshBtn" title="Refresh dari GitHub">🔄</button>
+                <button class="btn btn-primary btn-sm" id="addAlbumBtn">+ Album</button>
+                <button class="btn btn-outline btn-sm" onclick="refreshData()" id="refreshBtn" title="Refresh">🔄</button>
             </div>
         </header>
 
@@ -843,7 +990,7 @@
             <div id="emptyAlbum" class="empty-state hidden">
                 <div class="icon">🖼️</div>
                 <h3>Belum ada album</h3>
-                <p>Klik <strong>"+ Album Baru"</strong> untuk mulai upload gambar</p>
+                <p>Klik <strong>+ Album</strong> untuk mulai upload gambar</p>
             </div>
         </div>
 
@@ -851,14 +998,37 @@
         <div id="detailView" class="hidden">
             <div class="detail-header">
                 <div class="left">
-                    <button class="back-btn" id="backHomeBtn">← Kembali</button>
+                    <button class="back-btn" id="backHomeBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Kembali
+                    </button>
                     <h2 id="detailTitle">Album</h2>
                     <div class="sub" id="detailSub">0 gambar</div>
                 </div>
                 <div class="detail-actions">
-                    <button class="btn btn-primary btn-sm" id="addImageBtn">+ Tambah</button>
-                    <button class="btn btn-danger btn-sm" id="deleteSelectedBtn" disabled>🗑️ <span id="selectedCount">0</span></button>
-                    <button class="btn btn-outline btn-sm" onclick="confirmDeleteAlbum()">🗑️ Hapus Album</button>
+                    <button class="btn btn-primary btn-sm" id="addImageBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Tambah
+                    </button>
+                    <button class="btn btn-danger btn-sm" id="deleteSelectedBtn" disabled>
+                        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                        <span id="selectedCount">0</span>
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="confirmDeleteAlbum()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                        Hapus Album
+                    </button>
                 </div>
             </div>
 
@@ -866,12 +1036,35 @@
             <div id="emptyImage" class="empty-state hidden">
                 <div class="icon">📷</div>
                 <h3>Belum ada gambar</h3>
-                <p>Klik <strong>"+ Tambah"</strong> untuk upload gambar ke album ini</p>
+                <p>Klik <strong>Tambah</strong> untuk upload gambar ke album ini</p>
             </div>
         </div>
     </div>
 
-    <!-- MODAL -->
+    <!-- TOKEN MODAL -->
+    <div class="modal-overlay" id="tokenModal">
+        <div class="modal">
+            <h3>
+                <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                Token GitHub
+            </h3>
+            <p>Masukkan Personal Access Token untuk upload &amp; hapus gambar.</p>
+            <div class="form-group">
+                <label>Token</label>
+                <input type="password" id="tokenModalInput" placeholder="ghp_xxxxxxxxxxxx" />
+                <div class="hint">Token memerlukan scope <strong>repo</strong></div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-outline" onclick="closeTokenModal()">Batal</button>
+                <button class="btn btn-primary" onclick="saveTokenFromModal()">💾 Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM MODAL -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal">
             <h3 id="modalTitle">Konfirmasi</h3>
@@ -880,6 +1073,21 @@
                 <button class="btn btn-outline" id="modalCancel">Batal</button>
                 <button class="btn btn-danger" id="modalConfirm">Hapus</button>
             </div>
+        </div>
+    </div>
+
+    <!-- UPLOAD STATUS -->
+    <div class="upload-status" id="uploadStatus">
+        <div class="status-title">
+            <span>⏳ Uploading...</span>
+            <span id="uploadCount" style="margin-left:auto;font-weight:400;font-size:13px;color:#888;">0/0</span>
+        </div>
+        <div class="status-bar">
+            <div class="fill" id="uploadProgressFill"></div>
+        </div>
+        <div class="status-detail">
+            <span id="uploadCurrentFile">-</span>
+            <span id="uploadPercent">0%</span>
         </div>
     </div>
 
@@ -927,6 +1135,11 @@
             document.getElementById('modalCancel').addEventListener('click', closeModal);
             document.getElementById('modalConfirm').addEventListener('click', executeDelete);
 
+            // Token modal enter key
+            document.getElementById('tokenModalInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') saveTokenFromModal();
+            });
+
             loadAlbumsFromGitHub();
         });
 
@@ -934,24 +1147,30 @@
         //  TOKEN UI
         // ============================================================
         function updateTokenUI() {
-            const wrapper = document.getElementById('tokenWrapper');
-            const input = document.getElementById('tokenInput');
-            const status = document.getElementById('tokenStatus');
-
+            const btn = document.getElementById('tokenBtn');
             if (GITHUB_TOKEN) {
-                wrapper.classList.add('token-saved');
-                status.textContent = '✅';
-                input.placeholder = 'Token tersimpan';
-                input.value = '';
+                btn.classList.add('token-active');
+                btn.classList.remove('token-inactive');
+                btn.title = '✅ Token aktif';
             } else {
-                wrapper.classList.remove('token-saved');
-                status.textContent = '🔑';
-                input.placeholder = 'Token GitHub';
+                btn.classList.remove('token-active');
+                btn.classList.add('token-inactive');
+                btn.title = '❌ Token belum diatur';
             }
         }
 
-        function saveToken() {
-            const input = document.getElementById('tokenInput');
+        function openTokenModal() {
+            document.getElementById('tokenModal').classList.add('active');
+            document.getElementById('tokenModalInput').value = '';
+            document.getElementById('tokenModalInput').focus();
+        }
+
+        function closeTokenModal() {
+            document.getElementById('tokenModal').classList.remove('active');
+        }
+
+        function saveTokenFromModal() {
+            const input = document.getElementById('tokenModalInput');
             const token = input.value.trim();
 
             if (!token) {
@@ -962,6 +1181,7 @@
             localStorage.setItem(TOKEN_KEY, token);
             GITHUB_TOKEN = token;
             updateTokenUI();
+            closeTokenModal();
             showToast('✅ Token berhasil disimpan!', 'success');
             loadAlbumsFromGitHub();
         }
@@ -1111,7 +1331,7 @@
                                 <div class="info">
                                     <h3>${album.name}</h3>
                                     <div class="meta">${album.images.length} gambar · ${album.date}</div>
-                                    <span class="badge">📂 ${album.id}</span>
+                                    <span class="badge">${album.id}</span>
                                 </div>
                             </div>
                             <button class="album-delete-btn" onclick="event.stopPropagation();confirmDeleteAlbumFromHome('${album.id}')" title="Hapus album">
@@ -1158,6 +1378,13 @@
                         <div class="image-item ${isSelected ? 'selected' : ''}" data-img="${img}">
                             <div class="image-wrapper">
                                 <img src="${fullUrl}" alt="${filename}" loading="lazy" />
+                                <div class="upload-progress" id="progress-${img.replace(/[\/.]/g,'-')}">
+                                    <div class="progress-ring"></div>
+                                    <div class="progress-text">Uploading...</div>
+                                    <div class="progress-bar-track">
+                                        <div class="progress-bar-fill" style="width:0%"></div>
+                                    </div>
+                                </div>
                                 <div class="image-overlay always-show">
                                     <button class="checkbox-btn ${isSelected ? 'checked' : ''}" onclick="toggleImageSelect('${img}')">
                                         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
@@ -1237,7 +1464,7 @@
             pendingDeleteType = 'album';
 
             document.getElementById('modalTitle').textContent = 'Hapus Album';
-            document.getElementById('modalMessage').textContent =
+            document.getElementById('modalMessage').innerHTML =
                 `Yakin ingin menghapus album <strong>"${album.name}"</strong> beserta <strong>${album.images.length}</strong> gambarnya?`;
             document.getElementById('confirmModal').classList.add('active');
         }
@@ -1251,13 +1478,13 @@
             pendingDeleteType = 'album';
 
             document.getElementById('modalTitle').textContent = 'Hapus Album';
-            document.getElementById('modalMessage').textContent =
+            document.getElementById('modalMessage').innerHTML =
                 `Yakin ingin menghapus album <strong>"${album.name}"</strong> beserta <strong>${album.images.length}</strong> gambarnya?`;
             document.getElementById('confirmModal').classList.add('active');
         }
 
         // ============================================================
-        //  UPLOAD GAMBAR
+        //  UPLOAD GAMBAR (dengan progress)
         // ============================================================
         async function handleFileUpload(e) {
             const files = e.target.files;
@@ -1275,17 +1502,33 @@
             const albumFolder = `img/${album.id}`;
             const baseUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
 
-            showToast(`⏳ Uploading ${files.length} gambar...`, 'warning');
+            // Show upload status
+            const statusEl = document.getElementById('uploadStatus');
+            const fillEl = document.getElementById('uploadProgressFill');
+            const countEl = document.getElementById('uploadCount');
+            const currentFileEl = document.getElementById('uploadCurrentFile');
+            const percentEl = document.getElementById('uploadPercent');
 
+            statusEl.classList.add('active');
+            const total = files.length;
             let uploaded = 0;
-            for (const file of files) {
-                try {
-                    const ext = file.name.split('.').pop();
-                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-                    const cleanName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                    const filename = `${timestamp}-${cleanName}.${ext}`;
-                    const path = `${albumFolder}/${filename}`;
 
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const ext = file.name.split('.').pop();
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                const cleanName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                const filename = `${timestamp}-${cleanName}.${ext}`;
+                const path = `${albumFolder}/${filename}`;
+
+                // Update status
+                currentFileEl.textContent = file.name;
+                countEl.textContent = `${i+1}/${total}`;
+                const progress = ((i) / total) * 100;
+                fillEl.style.width = progress + '%';
+                percentEl.textContent = Math.round(progress) + '%';
+
+                try {
                     const reader = new FileReader();
                     const content = await new Promise((resolve) => {
                         reader.onload = () => resolve(reader.result.split(',')[1]);
@@ -1317,7 +1560,17 @@
                     console.error(err);
                     showToast('❌ Gagal upload: ' + file.name, 'error');
                 }
+
+                // Update progress after each file
+                const afterProgress = ((i + 1) / total) * 100;
+                fillEl.style.width = afterProgress + '%';
+                percentEl.textContent = Math.round(afterProgress) + '%';
             }
+
+            // Hide status
+            setTimeout(() => {
+                statusEl.classList.remove('active');
+            }, 500);
 
             if (uploaded === 0) {
                 showToast('❌ Gagal upload semua gambar', 'error');
@@ -1408,7 +1661,8 @@
             pendingDeleteType = 'single';
 
             document.getElementById('modalTitle').textContent = 'Hapus Gambar';
-            document.getElementById('modalMessage').textContent = `Yakin ingin menghapus <strong>"${filename}"</strong>?`;
+            document.getElementById('modalMessage').innerHTML =
+                `Yakin ingin menghapus <strong>"${filename}"</strong>?`;
             document.getElementById('confirmModal').classList.add('active');
         }
 
@@ -1425,7 +1679,7 @@
             pendingDeleteType = 'multiple';
 
             document.getElementById('modalTitle').textContent = 'Hapus Gambar Terpilih';
-            document.getElementById('modalMessage').textContent =
+            document.getElementById('modalMessage').innerHTML =
                 `Yakin ingin menghapus <strong>${selectedImages.size}</strong> gambar terpilih?`;
             document.getElementById('confirmModal').classList.add('active');
         }
@@ -1553,14 +1807,10 @@
         function updateDeleteButton() {
             const count = selectedImages.size;
             const btn = document.getElementById('deleteSelectedBtn');
+            const span = document.getElementById('selectedCount');
 
-            if (count > 0) {
-                btn.disabled = false;
-                btn.innerHTML = `🗑️ ${count}`;
-            } else {
-                btn.disabled = true;
-                btn.innerHTML = `🗑️ 0`;
-            }
+            span.textContent = count;
+            btn.disabled = count === 0;
         }
 
         // ============================================================
@@ -1601,7 +1851,7 @@
 
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            toast.innerHTML = message;
             toast.className = 'toast ' + type;
             toast.classList.add('show');
 
@@ -1640,6 +1890,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
+                closeTokenModal();
                 if (!document.getElementById('detailView').classList.contains('hidden')) {
                     goHome();
                 }
@@ -1658,9 +1909,11 @@
         window.confirmDeleteAlbumFromHome = confirmDeleteAlbumFromHome;
         window.copyUrl = copyUrl;
         window.closeModal = closeModal;
+        window.closeTokenModal = closeTokenModal;
+        window.openTokenModal = openTokenModal;
+        window.saveTokenFromModal = saveTokenFromModal;
         window.executeDelete = executeDelete;
         window.createNewAlbum = createNewAlbum;
-        window.saveToken = saveToken;
         window.refreshData = refreshData;
     </script>
 
