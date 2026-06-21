@@ -1684,6 +1684,42 @@
         }
 
         // ============================================================
+        //  HELPER: PUT ke GitHub Contents API pakai XHR (progress byte asli)
+        //  fetch() gak punya event progress upload, makanya pakai XHR di sini.
+        // ============================================================
+        function githubPutWithProgress(url, bodyObj, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', url, true);
+                xhr.setRequestHeader('Authorization', `token ${GITHUB_TOKEN}`);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable && onProgress) {
+                        onProgress(e.loaded, e.total);
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            resolve(JSON.parse(xhr.responseText));
+                        } catch {
+                            resolve({});
+                        }
+                    } else {
+                        let msg = 'Upload gagal';
+                        try { msg = JSON.parse(xhr.responseText).message || msg; } catch {}
+                        reject(new Error(msg));
+                    }
+                };
+                xhr.onerror = () => reject(new Error('Koneksi gagal'));
+
+                xhr.send(JSON.stringify(bodyObj));
+            });
+        }
+
+        // ============================================================
         //  UPLOAD GAMBAR
         // ============================================================
         async function handleFileUpload(e) {
@@ -1712,6 +1748,13 @@
             const total = files.length;
             let uploaded = 0;
 
+            // dipakai buat hitung progress gabungan: file ke berapa + progress byte file yg lagi jalan
+            function setProgress(fileIndex, fileFraction) {
+                const overall = ((fileIndex + fileFraction) / total) * 100;
+                fillEl.style.width = overall + '%';
+                percentEl.textContent = Math.round(overall) + '%';
+            }
+
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const ext = file.name.split('.').pop();
@@ -1722,9 +1765,7 @@
 
                 currentFileEl.textContent = file.name;
                 countEl.textContent = `${i+1}/${total}`;
-                const progress = ((i) / total) * 100;
-                fillEl.style.width = progress + '%';
-                percentEl.textContent = Math.round(progress) + '%';
+                setProgress(i, 0);
 
                 try {
                     const reader = new FileReader();
@@ -1733,23 +1774,13 @@
                         reader.readAsDataURL(file);
                     });
 
-                    const response = await fetch(`${baseUrl}/${path}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `Upload ${filename}`,
-                            content: content,
-                            branch: GITHUB_BRANCH
-                        })
+                    await githubPutWithProgress(`${baseUrl}/${path}`, {
+                        message: `Upload ${filename}`,
+                        content: content,
+                        branch: GITHUB_BRANCH
+                    }, (loaded, totalBytes) => {
+                        setProgress(i, loaded / totalBytes);
                     });
-
-                    if (!response.ok) {
-                        const err = await response.json();
-                        throw new Error(err.message || 'Upload gagal');
-                    }
 
                     album.images.push(path);
                     uploaded++;
@@ -1759,9 +1790,7 @@
                     showToast('Gagal upload: ' + file.name, 'error');
                 }
 
-                const afterProgress = ((i + 1) / total) * 100;
-                fillEl.style.width = afterProgress + '%';
-                percentEl.textContent = Math.round(afterProgress) + '%';
+                setProgress(i + 1, 0);
             }
 
             setTimeout(() => {
@@ -2109,41 +2138,41 @@
             moveCopyInProgress = true;
             window.addEventListener('beforeunload', beforeUnloadGuard);
 
+            // dipakai buat hitung progress gabungan: file ke berapa + progress byte file yg lagi jalan
+            function setProgress(fileIndex, fileFraction) {
+                const overall = ((fileIndex + fileFraction) / total) * 100;
+                fillEl.style.width = overall + '%';
+                percentEl.textContent = Math.round(overall) + '%';
+            }
+
             for (let i = 0; i < paths.length; i++) {
                 const oldPath = paths[i];
                 const filename = oldPath.split('/').pop();
 
                 currentFileEl.textContent = filename;
                 countEl.textContent = `${i + 1}/${total}`;
-                const progressBefore = (i / total) * 100;
-                fillEl.style.width = progressBefore + '%';
-                percentEl.textContent = Math.round(progressBefore) + '%';
+                setProgress(i, 0);
 
                 try {
                     const newPath = `img/${targetAlbum.id}/${filename}`;
 
-                    // ambil konten + sha file asli
+                    // ambil konten + sha file asli (porsi 0% - 20% dari slot file ini)
                     const getRes = await fetch(`${baseUrl}/${oldPath}?ref=${GITHUB_BRANCH}`, {
                         headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
                     });
                     if (!getRes.ok) throw new Error('Gagal ambil file sumber');
                     const fileData = await getRes.json();
                     const content = fileData.content.replace(/\n/g, '');
+                    setProgress(i, 0.2);
 
-                    // tulis ke path baru di album tujuan
-                    const putRes = await fetch(`${baseUrl}/${newPath}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `${mode === 'move' ? 'Move' : 'Copy'} ${filename}`,
-                            content: content,
-                            branch: GITHUB_BRANCH
-                        })
+                    // tulis ke path baru di album tujuan (porsi 20% - 100% dari slot file ini, real byte progress)
+                    await githubPutWithProgress(`${baseUrl}/${newPath}`, {
+                        message: `${mode === 'move' ? 'Move' : 'Copy'} ${filename}`,
+                        content: content,
+                        branch: GITHUB_BRANCH
+                    }, (loaded, totalBytes) => {
+                        setProgress(i, 0.2 + (loaded / totalBytes) * 0.8);
                     });
-                    if (!putRes.ok) throw new Error('Gagal tulis file tujuan');
 
                     // kalau mode pindah, hapus file lama
                     if (mode === 'move') {
@@ -2184,9 +2213,7 @@
                     showToast('Gagal proses: ' + filename, 'error');
                 }
 
-                const progressAfter = ((i + 1) / total) * 100;
-                fillEl.style.width = progressAfter + '%';
-                percentEl.textContent = Math.round(progressAfter) + '%';
+                setProgress(i + 1, 0);
             }
 
             moveCopyInProgress = false;
