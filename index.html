@@ -1192,6 +1192,7 @@
     <!-- FILE INPUT -->
     <input type="file" id="fileInput" accept="image/*" multiple />
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ============================================================
         //  CONFIG
@@ -1199,7 +1200,12 @@
         const TOKEN_KEY = 'github_token';
         const GITHUB_REPO = 'adimigaker/imgbox';
         const GITHUB_BRANCH = 'main';
-        const DATA_FILE = 'albums.json';
+
+        const SUPABASE_URL = 'https://hcsueapcpcjhnolvedcj.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhjc3VlYXBjcGNqaG5vbHZlZGNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTM4NTMsImV4cCI6MjA4OTM4OTg1M30.UREkZtP2YbMJTgK-CybvXdvW6uowIFp0xGG5rgHZ85M';
+        const SUPABASE_TABLE = 'imgbox_albums';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let GITHUB_TOKEN = localStorage.getItem(TOKEN_KEY) || '';
         let albums = [];
@@ -1234,7 +1240,7 @@
                 if (e.key === 'Enter') saveTokenFromModal();
             });
 
-            loadAlbumsFromGitHub();
+            loadAlbumsFromSupabase();
         });
 
         // ============================================================
@@ -1277,13 +1283,13 @@
             updateTokenUI();
             closeTokenModal();
             showToast('Token berhasil disimpan!', 'success');
-            loadAlbumsFromGitHub();
+            loadAlbumsFromSupabase();
         }
 
         // ============================================================
         //  LOAD DATA FROM GITHUB
         // ============================================================
-        async function loadAlbumsFromGitHub() {
+        async function loadAlbumsFromSupabase() {
             if (isLoading) return;
             isLoading = true;
 
@@ -1295,25 +1301,29 @@
             grid.innerHTML = `
                     <div class="loading" style="grid-column:1/-1;">
                         <div class="spinner"></div>
-                        <p>Memuat data dari GitHub...</p>
+                        <p>Memuat data dari Supabase...</p>
                     </div>
                 `;
 
             try {
-                const url =
-                    `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${DATA_FILE}?t=${Date.now()}`;
-                const response = await fetch(url, { cache: 'no-store' });
+                const { data, error } = await supabaseClient
+                    .from(SUPABASE_TABLE)
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-                if (!response.ok) {
-                    albums = [];
-                } else {
-                    const data = await response.json();
-                    albums = data.albums || [];
-                }
+                if (error) throw error;
+
+                albums = (data || []).map(a => ({
+                    id: a.id,
+                    name: a.name,
+                    date: a.date,
+                    cover: a.cover || '',
+                    images: a.images || []
+                }));
 
                 saveAlbumsToLocal();
                 renderHome();
-                showToast('Data dimuat dari GitHub', 'success');
+                showToast('Data dimuat dari Supabase', 'success');
 
             } catch (err) {
                 console.error(err);
@@ -1322,7 +1332,7 @@
                     try {
                         albums = JSON.parse(local);
                         renderHome();
-                        showToast('Pakai data lokal (gagal load GitHub)', 'warning');
+                        showToast('Pakai data lokal (gagal load Supabase)', 'warning');
                     } catch {
                         albums = [];
                         renderHome();
@@ -1339,57 +1349,48 @@
         }
 
         function refreshData() {
-            loadAlbumsFromGitHub();
+            loadAlbumsFromSupabase();
         }
 
         // ============================================================
-        //  SAVE DATA TO GITHUB
+        //  SAVE 1 ALBUM (upsert) KE SUPABASE
         // ============================================================
-        async function saveAlbumsToGitHub() {
-            if (!GITHUB_TOKEN) {
-                showToast('Token belum disimpan!', 'warning');
-                return false;
-            }
-
+        async function saveAlbumToSupabase(album) {
             try {
-                const content = btoa(unescape(encodeURIComponent(JSON.stringify({ albums }, null, 2))));
-                const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${DATA_FILE}`;
+                const { error } = await supabaseClient
+                    .from(SUPABASE_TABLE)
+                    .upsert({
+                        id: album.id,
+                        name: album.name,
+                        date: album.date,
+                        cover: album.cover || '',
+                        images: album.images || []
+                    });
 
-                let sha = '';
-                const checkRes = await fetch(`${url}?ref=${GITHUB_BRANCH}`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-
-                if (checkRes.ok) {
-                    const data = await checkRes.json();
-                    sha = data.sha;
-                }
-
-                const body = {
-                    message: `Update albums data`,
-                    content: content,
-                    branch: GITHUB_BRANCH
-                };
-                if (sha) body.sha = sha;
-
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                });
-
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.message || 'Gagal simpan data');
-                }
-
+                if (error) throw error;
                 return true;
             } catch (err) {
                 console.error(err);
                 showToast('Gagal simpan data: ' + err.message, 'error');
+                return false;
+            }
+        }
+
+        // ============================================================
+        //  DELETE 1 ALBUM DARI SUPABASE
+        // ============================================================
+        async function deleteAlbumFromSupabase(albumId) {
+            try {
+                const { error } = await supabaseClient
+                    .from(SUPABASE_TABLE)
+                    .delete()
+                    .eq('id', albumId);
+
+                if (error) throw error;
+                return true;
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal hapus album dari database: ' + err.message, 'error');
                 return false;
             }
         }
@@ -1540,7 +1541,7 @@
             albums.unshift(album);
             saveAlbumsToLocal();
 
-            const success = await saveAlbumsToGitHub();
+            const success = await saveAlbumToSupabase(album);
             if (success) {
                 renderHome();
                 openAlbum(album.id);
@@ -1677,7 +1678,7 @@
             album.date = new Date().toISOString().split('T')[0];
 
             saveAlbumsToLocal();
-            const success = await saveAlbumsToGitHub();
+            const success = await saveAlbumToSupabase(album);
 
             if (success) {
                 renderDetail(currentAlbumId);
@@ -1731,9 +1732,9 @@
                     }
                 }
 
+                await deleteAlbumFromSupabase(albumId);
                 albums = albums.filter(a => a.id !== albumId);
                 saveAlbumsToLocal();
-                await saveAlbumsToGitHub();
 
                 return true;
             } catch (err) {
@@ -1810,7 +1811,7 @@
                         album.cover = album.images[0] || '';
                     }
                     saveAlbumsToLocal();
-                    await saveAlbumsToGitHub();
+                    await saveAlbumToSupabase(album);
                     renderDetail(currentAlbumId);
                     showToast('Gambar dihapus', 'success');
                 }
@@ -1828,7 +1829,7 @@
                     }
                 }
                 saveAlbumsToLocal();
-                await saveAlbumsToGitHub();
+                await saveAlbumToSupabase(album);
                 renderDetail(currentAlbumId);
                 selectedImages.clear();
                 updateDeleteButton();
