@@ -109,6 +109,39 @@
             font-size: 12px;
         }
 
+        .token-input {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 12px;
+            width: 200px;
+            transition: border-color 0.3s;
+        }
+
+        body.light .token-input {
+            background: #fff;
+            border-color: #ccc;
+            color: #1a1a1a;
+        }
+
+        .token-input:focus {
+            outline: none;
+            border-color: #6c63ff;
+        }
+
+        .token-input.token-saved {
+            border-color: #28a745;
+        }
+
+        @media (max-width: 600px) {
+            .token-input {
+                width: 140px;
+                font-size: 11px;
+            }
+        }
+
         /* ===== ALBUM GRID (Home) ===== */
         .album-grid {
             display: grid;
@@ -577,6 +610,9 @@
         <header class="header">
             <h1>📦 img<span>box</span></h1>
             <div class="header-actions">
+                <!-- INPUT TOKEN -->
+                <input type="password" class="token-input" id="tokenInput" placeholder="🔑 Masukkan Token" />
+                <button class="btn btn-primary btn-sm" onclick="saveToken()">💾 Simpan</button>
                 <button class="toggle-theme" id="themeToggle" title="Toggle theme">🌙</button>
                 <button class="btn btn-primary" id="addAlbumBtn">+ Album Baru</button>
             </div>
@@ -638,15 +674,16 @@
         //  DATA
         // ============================================================
         const STORAGE_KEY = 'imgbox_albums';
-        const GITHUB_REPO = 'adimigaker/imgbox'; // <-- GANTI DENGAN REPO KAMU
+        const TOKEN_KEY = 'github_token';
+        const GITHUB_REPO = 'adimigaker/imgbox';
         const GITHUB_BRANCH = 'main';
-        const GITHUB_TOKEN = ''; // <-- ISI DENGAN PERSONAL ACCESS TOKEN
 
+        let GITHUB_TOKEN = localStorage.getItem(TOKEN_KEY) || '';
         let albums = [];
         let currentAlbumId = null;
         let selectedImages = new Set();
         let pendingDeleteTarget = null;
-        let pendingDeleteType = ''; // 'single' | 'multiple'
+        let pendingDeleteType = '';
 
         // ============================================================
         //  INIT
@@ -654,6 +691,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadAlbums();
             renderHome();
+
+            // Tampilkan status token di input
+            const tokenInput = document.getElementById('tokenInput');
+            if (GITHUB_TOKEN) {
+                tokenInput.placeholder = '✅ Token tersimpan';
+                tokenInput.classList.add('token-saved');
+                tokenInput.value = '';
+            }
 
             // Theme
             const savedTheme = localStorage.getItem('imgbox_theme');
@@ -672,6 +717,29 @@
             document.getElementById('modalCancel').addEventListener('click', closeModal);
             document.getElementById('modalConfirm').addEventListener('click', executeDelete);
         });
+
+        // ============================================================
+        //  TOKEN
+        // ============================================================
+        function saveToken() {
+            const input = document.getElementById('tokenInput');
+            const token = input.value.trim();
+
+            if (!token) {
+                showToast('⚠️ Masukkan token dulu!', 2000);
+                return;
+            }
+
+            // Simpan token
+            localStorage.setItem(TOKEN_KEY, token);
+            GITHUB_TOKEN = token;
+
+            // Update UI
+            input.placeholder = '✅ Token tersimpan!';
+            input.classList.add('token-saved');
+            input.value = '';
+            showToast('✅ Token berhasil disimpan!');
+        }
 
         // ============================================================
         //  DATA PERSISTENCE (LocalStorage)
@@ -837,7 +905,7 @@
             const baseUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
 
             if (!GITHUB_TOKEN) {
-                showToast('⚠️ GITHUB_TOKEN belum diisi!', 4000);
+                showToast('⚠️ Token belum disimpan! Masukkan token di header.', 4000);
                 return;
             }
 
@@ -902,7 +970,7 @@
         // ============================================================
         async function deleteImageFromRepo(path) {
             if (!GITHUB_TOKEN) {
-                showToast('⚠️ GITHUB_TOKEN belum diisi!', 4000);
+                showToast('⚠️ Token belum disimpan!', 4000);
                 return false;
             }
 
@@ -1165,6 +1233,7 @@
         window.executeDelete = executeDelete;
         window.createNewAlbum = createNewAlbum;
         window.deleteAlbum = deleteAlbum;
+        window.saveToken = saveToken;
     </script>
 
 </body>
