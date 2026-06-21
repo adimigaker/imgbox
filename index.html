@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>imgbox</title>
     <style>
+        /* ===== RESET ===== */
         * {
             margin: 0;
             padding: 0;
@@ -30,6 +31,7 @@
             margin: 0 auto;
         }
 
+        /* ===== HEADER ===== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -56,24 +58,31 @@
             flex-wrap: wrap;
         }
 
+        /* ===== BUTTON ===== */
         .btn {
             padding: 8px 18px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             background: #2a2a2a;
             color: #e5e5e5;
+            text-decoration: none;
         }
 
         .btn:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.2);
+            transform: translateY(-2px);
+            filter: brightness(1.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
         }
 
         .btn-primary {
@@ -81,15 +90,33 @@
             color: #fff;
         }
 
+        .btn-primary:hover {
+            background: #5a52e0;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
         .btn-danger {
             background: #dc3545;
             color: #fff;
         }
 
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
         .btn-danger:disabled {
             opacity: 0.4;
             cursor: not-allowed;
-            transform: none;
+            transform: none !important;
+            box-shadow: none !important;
         }
 
         .btn-outline {
@@ -103,96 +130,139 @@
             color: #1a1a1a;
         }
 
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        body.light .btn-outline:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
         .btn-sm {
             padding: 5px 12px;
             font-size: 12px;
-        }
-
-        .token-input {
-            padding: 6px 12px;
             border-radius: 8px;
-            border: 1px solid #333;
+        }
+
+        /* ===== TOKEN INPUT ===== */
+        .token-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             background: #1a1a1a;
-            color: #fff;
-            font-size: 12px;
-            width: 200px;
-            transition: border-color 0.3s;
+            border-radius: 10px;
+            padding: 2px 8px 2px 12px;
+            border: 1.5px solid #333;
+            transition: all 0.3s;
         }
 
-        body.light .token-input {
+        body.light .token-wrapper {
             background: #fff;
-            border-color: #ccc;
-            color: #1a1a1a;
+            border-color: #ddd;
         }
 
-        .token-input:focus {
-            outline: none;
+        .token-wrapper:focus-within {
             border-color: #6c63ff;
         }
 
-        .token-input.token-saved {
+        .token-wrapper .token-status {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .token-input {
+            background: transparent;
+            border: none;
+            color: #e5e5e5;
+            font-size: 12px;
+            padding: 6px 0;
+            width: 160px;
+            outline: none;
+            font-family: monospace;
+        }
+
+        body.light .token-input {
+            color: #1a1a1a;
+        }
+
+        .token-input::placeholder {
+            color: #666;
+        }
+
+        .token-wrapper.token-saved {
             border-color: #28a745;
+        }
+
+        .token-wrapper.token-saved .token-status {
+            color: #28a745;
         }
 
         @media (max-width: 600px) {
             .token-input {
-                width: 140px;
+                width: 100px;
                 font-size: 11px;
+            }
+            .token-wrapper {
+                padding: 2px 6px 2px 10px;
             }
         }
 
         /* ===== ALBUM GRID ===== */
         .album-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
 
         .album-card {
-            background: #1a1a1a;
-            border-radius: 14px;
+            background: #161616;
+            border-radius: 16px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
             border: 1px solid #2a2a2a;
             position: relative;
         }
 
         body.light .album-card {
             background: #fff;
-            border-color: #e0e0e0;
+            border-color: #e8e8e8;
         }
 
         .album-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            border-color: #6c63ff;
         }
 
         .album-card .cover {
             width: 100%;
             aspect-ratio: 16/10;
             object-fit: cover;
-            background: #222;
+            background: #1a1a1a;
         }
 
         .album-card .info {
-            padding: 14px 16px;
+            padding: 14px 16px 16px;
         }
 
         .album-card .info h3 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .album-card .info .meta {
-            font-size: 13px;
+            font-size: 12px;
             color: #888;
         }
 
         body.light .album-card .info .meta {
-            color: #666;
+            color: #777;
         }
 
         .album-card .info .badge {
@@ -200,15 +270,17 @@
             background: #2a2a2a;
             padding: 2px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             margin-top: 6px;
+            color: #999;
         }
 
         body.light .album-card .info .badge {
-            background: #eee;
+            background: #f0f0f0;
+            color: #666;
         }
 
-        /* Delete album button (overlay) */
+        /* Hapus album button di card */
         .album-delete-btn {
             position: absolute;
             top: 10px;
@@ -222,9 +294,10 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             opacity: 0;
             z-index: 5;
+            backdrop-filter: blur(4px);
         }
 
         .album-card:hover .album-delete-btn {
@@ -273,13 +346,24 @@
             background: none;
             border: none;
             color: #6c63ff;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             padding: 4px 0;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #5a52e0;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         /* ===== IMAGE GRID ===== */
@@ -290,7 +374,7 @@
             margin-top: 16px;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 600px) {
             .image-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
@@ -303,21 +387,21 @@
         }
 
         .image-item {
-            background: #161616;
-            border-radius: 12px;
+            background: #141414;
+            border-radius: 14px;
             overflow: hidden;
-            border: 1px solid #2a2a2a;
-            transition: border-color 0.2s;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
             position: relative;
         }
 
         body.light .image-item {
-            background: #fff;
-            border-color: #e0e0e0;
+            background: #fafafa;
         }
 
         .image-item.selected {
             border-color: #6c63ff;
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.15);
         }
 
         .image-wrapper {
@@ -332,8 +416,14 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            transition: transform 0.4s ease;
         }
 
+        .image-wrapper:hover img {
+            transform: scale(1.03);
+        }
+
+        /* Overlay */
         .image-overlay {
             position: absolute;
             top: 0;
@@ -344,9 +434,9 @@
             justify-content: space-between;
             padding: 8px;
             pointer-events: none;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 60%);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, transparent 55%);
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.25s ease;
         }
 
         .image-wrapper:hover .image-overlay,
@@ -358,24 +448,27 @@
             pointer-events: auto;
         }
 
+        /* Checkbox */
         .checkbox-btn {
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            border-radius: 6px;
-            width: 28px;
-            height: 28px;
+            background: rgba(0, 0, 0, 0.65);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             flex-shrink: 0;
             padding: 0;
+            backdrop-filter: blur(4px);
         }
 
         .checkbox-btn:hover {
             background: rgba(108, 99, 255, 0.6);
             border-color: #6c63ff;
+            transform: scale(1.05);
         }
 
         .checkbox-btn.checked {
@@ -398,23 +491,25 @@
             display: block;
         }
 
+        /* Delete X */
         .delete-btn {
-            background: rgba(220, 53, 69, 0.85);
+            background: rgba(220, 53, 69, 0.88);
             border: none;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             flex-shrink: 0;
             padding: 0;
+            backdrop-filter: blur(4px);
         }
 
         .delete-btn:hover {
-            transform: scale(1.1);
+            transform: scale(1.12);
             background: #dc3545;
         }
 
@@ -426,6 +521,7 @@
             stroke-linecap: round;
         }
 
+        /* Image Info */
         .image-info {
             padding: 10px 12px 12px;
         }
@@ -433,7 +529,7 @@
         .image-info .filename {
             font-size: 12px;
             font-weight: 500;
-            color: #aaa;
+            color: #999;
             display: block;
             margin-bottom: 4px;
             white-space: nowrap;
@@ -451,11 +547,11 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            border-radius: 6px;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 8px;
             background: rgba(108, 99, 255, 0.08);
-            transition: background 0.2s;
+            transition: all 0.2s ease;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -467,7 +563,8 @@
         }
 
         .image-info .url-copy:hover {
-            background: rgba(108, 99, 255, 0.15);
+            background: rgba(108, 99, 255, 0.16);
+            transform: scale(1.01);
         }
 
         .image-info .url-copy svg {
@@ -484,6 +581,7 @@
             text-overflow: ellipsis;
         }
 
+        /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -491,8 +589,9 @@
         }
 
         .empty-state .icon {
-            font-size: 48px;
+            font-size: 56px;
             margin-bottom: 16px;
+            opacity: 0.6;
         }
 
         .empty-state h3 {
@@ -505,46 +604,74 @@
             color: #444;
         }
 
+        .empty-state p {
+            color: #777;
+            font-size: 14px;
+        }
+
         /* ===== MODAL ===== */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 999;
             padding: 20px;
+            animation: fadeIn 0.25s ease;
         }
 
         .modal-overlay.active {
             display: flex;
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
         .modal {
             background: #1a1a1a;
-            border-radius: 16px;
-            max-width: 500px;
+            border-radius: 18px;
+            max-width: 480px;
             width: 100%;
-            padding: 28px 32px;
+            padding: 30px 32px;
             border: 1px solid #2a2a2a;
+            animation: slideUp 0.3s ease;
         }
 
         body.light .modal {
             background: #fff;
-            border-color: #e0e0e0;
+            border-color: #e8e8e8;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal h3 {
             font-size: 20px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .modal p {
             color: #888;
             font-size: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
+            line-height: 1.5;
         }
 
         body.light .modal p {
@@ -562,19 +689,19 @@
             position: fixed;
             bottom: 30px;
             left: 50%;
-            transform: translateX(-50%) translateY(100px);
+            transform: translateX(-50%) translateY(80px);
             background: #1a1a1a;
             color: #e5e5e5;
             padding: 12px 24px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid #2a2a2a;
             font-size: 14px;
             font-weight: 500;
             z-index: 1000;
             opacity: 0;
-            transition: all 0.4s ease;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
             pointer-events: none;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -583,7 +710,7 @@
         body.light .toast {
             background: #fff;
             color: #1a1a1a;
-            border-color: #e0e0e0;
+            border-color: #e8e8e8;
         }
 
         .toast.show {
@@ -591,6 +718,17 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        .toast.success {
+            border-color: #28a745;
+        }
+        .toast.error {
+            border-color: #dc3545;
+        }
+        .toast.warning {
+            border-color: #ffc107;
+        }
+
+        /* ===== TOGGLE THEME ===== */
         .toggle-theme {
             background: none;
             border: none;
@@ -598,12 +736,18 @@
             font-size: 20px;
             cursor: pointer;
             padding: 4px 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-theme:hover {
+            transform: rotate(20deg);
         }
 
         body.light .toggle-theme {
             color: #1a1a1a;
         }
 
+        /* ===== HIDDEN ===== */
         .hidden {
             display: none !important;
         }
@@ -612,23 +756,29 @@
             display: none;
         }
 
+        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar {
             width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+            background: #141414;
         }
         ::-webkit-scrollbar-thumb {
-            background: #444;
+            background: #3a3a3a;
             border-radius: 10px;
         }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
         body.light ::-webkit-scrollbar-track {
-            background: #eee;
+            background: #f0f0f0;
         }
         body.light ::-webkit-scrollbar-thumb {
             background: #ccc;
         }
 
+        /* ===== LOADING ===== */
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -642,8 +792,13 @@
             border: 3px solid #2a2a2a;
             border-top-color: #6c63ff;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.7s linear infinite;
             margin-bottom: 16px;
+        }
+
+        body.light .loading .spinner {
+            border-color: #ddd;
+            border-top-color: #6c63ff;
         }
 
         @keyframes spin {
@@ -651,31 +806,48 @@
                 transform: rotate(360deg);
             }
         }
+
+        .btn .spinner-sm {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
     </style>
 </head>
 <body>
 
     <div class="container" id="app">
+        <!-- HEADER -->
         <header class="header">
             <h1>📦 img<span>box</span></h1>
             <div class="header-actions">
-                <input type="password" class="token-input" id="tokenInput" placeholder="🔑 Masukkan Token" />
-                <button class="btn btn-primary btn-sm" onclick="saveToken()">💾 Simpan</button>
+                <!-- TOKEN INPUT -->
+                <div class="token-wrapper" id="tokenWrapper">
+                    <span class="token-status" id="tokenStatus">🔑</span>
+                    <input type="password" class="token-input" id="tokenInput" placeholder="Token GitHub" />
+                </div>
+                <button class="btn btn-success btn-sm" onclick="saveToken()" id="saveTokenBtn">💾</button>
                 <button class="toggle-theme" id="themeToggle" title="Toggle theme">🌙</button>
                 <button class="btn btn-primary" id="addAlbumBtn">+ Album Baru</button>
-                <button class="btn btn-outline btn-sm" onclick="refreshData()" title="Refresh dari GitHub">🔄</button>
+                <button class="btn btn-outline btn-sm" onclick="refreshData()" id="refreshBtn" title="Refresh dari GitHub">🔄</button>
             </div>
         </header>
 
+        <!-- HOME VIEW -->
         <div id="homeView">
             <div id="albumGrid" class="album-grid"></div>
             <div id="emptyAlbum" class="empty-state hidden">
                 <div class="icon">🖼️</div>
                 <h3>Belum ada album</h3>
-                <p style="color:#888;font-size:14px;">Klik "Album Baru" untuk mulai upload gambar</p>
+                <p>Klik <strong>"+ Album Baru"</strong> untuk mulai upload gambar</p>
             </div>
         </div>
 
+        <!-- DETAIL VIEW -->
         <div id="detailView" class="hidden">
             <div class="detail-header">
                 <div class="left">
@@ -683,10 +855,10 @@
                     <h2 id="detailTitle">Album</h2>
                     <div class="sub" id="detailSub">0 gambar</div>
                 </div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button class="btn btn-primary btn-sm" id="addImageBtn">+ Tambah Gambar</button>
-                    <button class="btn btn-danger btn-sm" id="deleteSelectedBtn" disabled>🗑️ Hapus (<span id="selectedCount">0</span>)</button>
-                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteAlbum()">🗑️ Hapus Album</button>
+                <div class="detail-actions">
+                    <button class="btn btn-primary btn-sm" id="addImageBtn">+ Tambah</button>
+                    <button class="btn btn-danger btn-sm" id="deleteSelectedBtn" disabled>🗑️ <span id="selectedCount">0</span></button>
+                    <button class="btn btn-outline btn-sm" onclick="confirmDeleteAlbum()">🗑️ Hapus Album</button>
                 </div>
             </div>
 
@@ -694,11 +866,12 @@
             <div id="emptyImage" class="empty-state hidden">
                 <div class="icon">📷</div>
                 <h3>Belum ada gambar</h3>
-                <p style="color:#888;font-size:14px;">Klik "Tambah Gambar" untuk upload</p>
+                <p>Klik <strong>"+ Tambah"</strong> untuk upload gambar ke album ini</p>
             </div>
         </div>
     </div>
 
+    <!-- MODAL -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal">
             <h3 id="modalTitle">Konfirmasi</h3>
@@ -710,7 +883,10 @@
         </div>
     </div>
 
+    <!-- TOAST -->
     <div class="toast" id="toast"></div>
+
+    <!-- FILE INPUT -->
     <input type="file" id="fileInput" accept="image/*" multiple />
 
     <script>
@@ -734,22 +910,14 @@
         //  INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Tampilkan status token
-            const tokenInput = document.getElementById('tokenInput');
-            if (GITHUB_TOKEN) {
-                tokenInput.placeholder = '✅ Token tersimpan';
-                tokenInput.classList.add('token-saved');
-                tokenInput.value = '';
-            }
+            updateTokenUI();
 
-            // Theme
             const savedTheme = localStorage.getItem('imgbox_theme');
             if (savedTheme === 'light') {
                 document.body.classList.add('light');
                 document.getElementById('themeToggle').textContent = '☀️';
             }
 
-            // Event listeners
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             document.getElementById('addAlbumBtn').addEventListener('click', createNewAlbum);
             document.getElementById('backHomeBtn').addEventListener('click', goHome);
@@ -759,31 +927,42 @@
             document.getElementById('modalCancel').addEventListener('click', closeModal);
             document.getElementById('modalConfirm').addEventListener('click', executeDelete);
 
-            // Load data dari GitHub
             loadAlbumsFromGitHub();
         });
 
         // ============================================================
-        //  TOKEN
+        //  TOKEN UI
         // ============================================================
+        function updateTokenUI() {
+            const wrapper = document.getElementById('tokenWrapper');
+            const input = document.getElementById('tokenInput');
+            const status = document.getElementById('tokenStatus');
+
+            if (GITHUB_TOKEN) {
+                wrapper.classList.add('token-saved');
+                status.textContent = '✅';
+                input.placeholder = 'Token tersimpan';
+                input.value = '';
+            } else {
+                wrapper.classList.remove('token-saved');
+                status.textContent = '🔑';
+                input.placeholder = 'Token GitHub';
+            }
+        }
+
         function saveToken() {
             const input = document.getElementById('tokenInput');
             const token = input.value.trim();
 
             if (!token) {
-                showToast('⚠️ Masukkan token dulu!', 2000);
+                showToast('⚠️ Masukkan token dulu!', 'warning');
                 return;
             }
 
             localStorage.setItem(TOKEN_KEY, token);
             GITHUB_TOKEN = token;
-
-            input.placeholder = '✅ Token tersimpan!';
-            input.classList.add('token-saved');
-            input.value = '';
-            showToast('✅ Token berhasil disimpan!');
-
-            // Refresh data setelah token disimpan
+            updateTokenUI();
+            showToast('✅ Token berhasil disimpan!', 'success');
             loadAlbumsFromGitHub();
         }
 
@@ -795,10 +974,13 @@
             isLoading = true;
 
             const grid = document.getElementById('albumGrid');
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.innerHTML = '⏳';
+
             grid.innerHTML = `
                     <div class="loading" style="grid-column:1/-1;">
                         <div class="spinner"></div>
-                        <p>Loading data dari GitHub...</p>
+                        <p>Memuat data dari GitHub...</p>
                     </div>
                 `;
 
@@ -808,7 +990,6 @@
                 const response = await fetch(url);
 
                 if (!response.ok) {
-                    // File belum ada, mulai dari kosong
                     albums = [];
                 } else {
                     const data = await response.json();
@@ -817,17 +998,16 @@
 
                 saveAlbumsToLocal();
                 renderHome();
-                showToast('✅ Data dimuat dari GitHub');
+                showToast('✅ Data dimuat dari GitHub', 'success');
 
             } catch (err) {
                 console.error(err);
-                // Coba dari localStorage
                 const local = localStorage.getItem('imgbox_albums');
                 if (local) {
                     try {
                         albums = JSON.parse(local);
                         renderHome();
-                        showToast('⚠️ Pakai data lokal (gagal load dari GitHub)');
+                        showToast('⚠️ Pakai data lokal (gagal load GitHub)', 'warning');
                     } catch {
                         albums = [];
                         renderHome();
@@ -839,6 +1019,7 @@
             }
 
             isLoading = false;
+            refreshBtn.innerHTML = '🔄';
         }
 
         function refreshData() {
@@ -850,7 +1031,7 @@
         // ============================================================
         async function saveAlbumsToGitHub() {
             if (!GITHUB_TOKEN) {
-                showToast('⚠️ Token belum disimpan!', 3000);
+                showToast('⚠️ Token belum disimpan!', 'warning');
                 return false;
             }
 
@@ -858,7 +1039,6 @@
                 const content = btoa(unescape(encodeURIComponent(JSON.stringify({ albums }, null, 2))));
                 const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${DATA_FILE}`;
 
-                // Cek apakah file sudah ada
                 let sha = '';
                 const checkRes = await fetch(`${url}?ref=${GITHUB_BRANCH}`, {
                     headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
@@ -893,7 +1073,7 @@
                 return true;
             } catch (err) {
                 console.error(err);
-                showToast('❌ Gagal simpan data ke GitHub: ' + err.message, 3000);
+                showToast('❌ Gagal simpan data: ' + err.message, 'error');
                 return false;
             }
         }
@@ -1041,9 +1221,8 @@
             if (success) {
                 renderHome();
                 openAlbum(album.id);
-                showToast('✅ Album "' + album.name + '" dibuat!');
+                showToast('✅ Album "' + album.name + '" dibuat!', 'success');
             } else {
-                // Rollback
                 albums = albums.filter(a => a.id !== album.id);
                 saveAlbumsToLocal();
                 renderHome();
@@ -1059,7 +1238,7 @@
 
             document.getElementById('modalTitle').textContent = 'Hapus Album';
             document.getElementById('modalMessage').textContent =
-                `Yakin ingin menghapus album "${album.name}" beserta ${album.images.length} gambarnya?`;
+                `Yakin ingin menghapus album <strong>"${album.name}"</strong> beserta <strong>${album.images.length}</strong> gambarnya?`;
             document.getElementById('confirmModal').classList.add('active');
         }
 
@@ -1073,7 +1252,7 @@
 
             document.getElementById('modalTitle').textContent = 'Hapus Album';
             document.getElementById('modalMessage').textContent =
-                `Yakin ingin menghapus album "${album.name}" beserta ${album.images.length} gambarnya?`;
+                `Yakin ingin menghapus album <strong>"${album.name}"</strong> beserta <strong>${album.images.length}</strong> gambarnya?`;
             document.getElementById('confirmModal').classList.add('active');
         }
 
@@ -1089,14 +1268,14 @@
             if (!album) return;
 
             if (!GITHUB_TOKEN) {
-                showToast('⚠️ Token belum disimpan!', 4000);
+                showToast('⚠️ Token belum disimpan!', 'warning');
                 return;
             }
 
             const albumFolder = `img/${album.id}`;
             const baseUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
 
-            showToast(`⏳ Uploading ${files.length} gambar...`, 3000);
+            showToast(`⏳ Uploading ${files.length} gambar...`, 'warning');
 
             let uploaded = 0;
             for (const file of files) {
@@ -1136,12 +1315,12 @@
 
                 } catch (err) {
                     console.error(err);
-                    showToast('❌ Gagal upload: ' + file.name, 3000);
+                    showToast('❌ Gagal upload: ' + file.name, 'error');
                 }
             }
 
             if (uploaded === 0) {
-                showToast('❌ Gagal upload semua gambar', 3000);
+                showToast('❌ Gagal upload semua gambar', 'error');
                 return;
             }
 
@@ -1156,29 +1335,27 @@
             if (success) {
                 renderDetail(currentAlbumId);
                 document.getElementById('fileInput').value = '';
-                showToast(`✅ ${uploaded} gambar berhasil diupload!`);
+                showToast(`✅ ${uploaded} gambar berhasil diupload!`, 'success');
             } else {
-                // Rollback gambar yang sudah diupload
                 for (let i = 0; i < uploaded; i++) {
                     album.images.pop();
                 }
                 saveAlbumsToLocal();
                 renderDetail(currentAlbumId);
-                showToast('❌ Gagal simpan data album', 3000);
+                showToast('❌ Gagal simpan data album', 'error');
             }
         }
 
         // ============================================================
-        //  DELETE ALBUM (full)
+        //  DELETE ALBUM
         // ============================================================
         async function executeDeleteAlbum(albumId, album) {
             if (!GITHUB_TOKEN) {
-                showToast('⚠️ Token belum disimpan!', 4000);
+                showToast('⚠️ Token belum disimpan!', 'warning');
                 return false;
             }
 
             try {
-                // Hapus semua gambar di album
                 const baseUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
 
                 for (const imgPath of album.images) {
@@ -1207,7 +1384,6 @@
                     }
                 }
 
-                // Hapus album dari data
                 albums = albums.filter(a => a.id !== albumId);
                 saveAlbumsToLocal();
                 await saveAlbumsToGitHub();
@@ -1215,7 +1391,7 @@
                 return true;
             } catch (err) {
                 console.error(err);
-                showToast('❌ Gagal hapus album: ' + err.message, 3000);
+                showToast('❌ Gagal hapus album: ' + err.message, 'error');
                 return false;
             }
         }
@@ -1232,7 +1408,7 @@
             pendingDeleteType = 'single';
 
             document.getElementById('modalTitle').textContent = 'Hapus Gambar';
-            document.getElementById('modalMessage').textContent = `Yakin ingin menghapus "${filename}"?`;
+            document.getElementById('modalMessage').textContent = `Yakin ingin menghapus <strong>"${filename}"</strong>?`;
             document.getElementById('confirmModal').classList.add('active');
         }
 
@@ -1250,7 +1426,7 @@
 
             document.getElementById('modalTitle').textContent = 'Hapus Gambar Terpilih';
             document.getElementById('modalMessage').textContent =
-                `Yakin ingin menghapus ${selectedImages.size} gambar?`;
+                `Yakin ingin menghapus <strong>${selectedImages.size}</strong> gambar terpilih?`;
             document.getElementById('confirmModal').classList.add('active');
         }
 
@@ -1268,7 +1444,7 @@
                 const success = await executeDeleteAlbum(albumId, album);
                 if (success) {
                     goHome();
-                    showToast('🗑️ Album dihapus');
+                    showToast('🗑️ Album dihapus', 'success');
                 }
                 pendingDeleteTarget = null;
                 pendingDeleteType = '';
@@ -1286,7 +1462,7 @@
                     saveAlbumsToLocal();
                     await saveAlbumsToGitHub();
                     renderDetail(currentAlbumId);
-                    showToast('🗑️ Gambar dihapus');
+                    showToast('🗑️ Gambar dihapus', 'success');
                 }
             } else if (target.type === 'multiple') {
                 const { paths, album } = target;
@@ -1306,7 +1482,7 @@
                 renderDetail(currentAlbumId);
                 selectedImages.clear();
                 updateDeleteButton();
-                showToast(`🗑️ ${successCount} gambar dihapus`);
+                showToast(`🗑️ ${successCount} gambar dihapus`, 'success');
             }
 
             pendingDeleteTarget = null;
@@ -1377,15 +1553,13 @@
         function updateDeleteButton() {
             const count = selectedImages.size;
             const btn = document.getElementById('deleteSelectedBtn');
-            const span = document.getElementById('selectedCount');
-            span.textContent = count;
 
             if (count > 0) {
                 btn.disabled = false;
-                btn.innerHTML = `🗑️ Hapus (<span id="selectedCount">${count}</span>)`;
+                btn.innerHTML = `🗑️ ${count}`;
             } else {
                 btn.disabled = true;
-                btn.innerHTML = `🗑️ Hapus (<span id="selectedCount">0</span>)`;
+                btn.innerHTML = `🗑️ 0`;
             }
         }
 
@@ -1395,7 +1569,7 @@
         function copyUrl(url, element) {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(url).then(() => {
-                    showToast('✅ URL copied!');
+                    showToast('✅ URL copied!', 'success');
                 }).catch(() => {
                     fallbackCopy(url);
                 });
@@ -1413,9 +1587,9 @@
             textarea.select();
             try {
                 document.execCommand('copy');
-                showToast('✅ URL copied!');
+                showToast('✅ URL copied!', 'success');
             } catch {
-                showToast('❌ Gagal copy', 2000);
+                showToast('❌ Gagal copy', 'error');
             }
             document.body.removeChild(textarea);
         }
@@ -1425,15 +1599,16 @@
         // ============================================================
         let toastTimeout = null;
 
-        function showToast(message, duration = 2500) {
+        function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
+            toast.className = 'toast ' + type;
             toast.classList.add('show');
 
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
                 toast.classList.remove('show');
-            }, duration);
+            }, 2800);
         }
 
         // ============================================================
@@ -1460,7 +1635,7 @@
         }
 
         // ============================================================
-        //  KEYBOARD SHORTCUT
+        //  KEYBOARD
         // ============================================================
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
