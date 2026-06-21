@@ -1327,7 +1327,7 @@
 
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             document.getElementById('addAlbumBtn').addEventListener('click', createNewAlbum);
-            document.getElementById('backHomeBtn').addEventListener('click', goHome);
+            document.getElementById('backHomeBtn').addEventListener('click', () => goHome());
             document.getElementById('addImageBtn').addEventListener('click', () => document.getElementById('fileInput').click());
             document.getElementById('fileInput').addEventListener('change', handleFileUpload);
             document.getElementById('deleteSelectedBtn').addEventListener('click', confirmDeleteSelected);
@@ -1390,6 +1390,19 @@
         // ============================================================
         //  LOAD DATA FROM GITHUB
         // ============================================================
+        // ============================================================
+        //  ROUTING: baca ?id= dari URL, buka album terkait kalau ada
+        // ============================================================
+        function applyUrlRoute() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id && albums.find(a => a.id === id)) {
+                openAlbum(id, true); // true = jangan pushState ulang, URL udah bener
+            } else {
+                renderHome();
+            }
+        }
+
         async function loadAlbumsFromSupabase() {
             if (isLoading) return;
             isLoading = true;
@@ -1423,7 +1436,7 @@
                 }));
 
                 saveAlbumsToLocal();
-                renderHome();
+                applyUrlRoute();
                 showToast('Data dimuat dari Supabase', 'success');
 
             } catch (err) {
@@ -1432,7 +1445,7 @@
                 if (local) {
                     try {
                         albums = JSON.parse(local);
-                        renderHome();
+                        applyUrlRoute();
                         showToast('Pakai data lokal (gagal load Supabase)', 'warning');
                     } catch {
                         albums = [];
@@ -1607,19 +1620,44 @@
         // ============================================================
         //  NAVIGASI
         // ============================================================
-        function openAlbum(id) {
+        function openAlbum(id, skipPushState) {
             renderDetail(id);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (!skipPushState) {
+                const url = new URL(window.location);
+                url.searchParams.set('id', id);
+                history.pushState({ albumId: id }, '', url);
+            }
         }
 
-        function goHome() {
+        function goHome(skipPushState) {
             document.getElementById('detailView').classList.add('hidden');
             document.getElementById('homeView').classList.remove('hidden');
             renderHome();
             currentAlbumId = null;
             selectedImages.clear();
             document.getElementById('fileInput').value = '';
+
+            if (!skipPushState) {
+                const url = new URL(window.location);
+                url.searchParams.delete('id');
+                history.pushState({}, '', url);
+            }
         }
+
+        // ============================================================
+        //  SINKRONISASI URL <-> VIEW (tombol back/forward browser)
+        // ============================================================
+        window.addEventListener('popstate', () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id && albums.find(a => a.id === id)) {
+                openAlbum(id, true);
+            } else {
+                goHome(true);
+            }
+        });
 
         // ============================================================
         //  ALBUM
