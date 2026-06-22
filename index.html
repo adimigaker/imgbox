@@ -2384,12 +2384,14 @@
         // ============================================================
         function closeModal() {
             document.getElementById('confirmModal').classList.remove('active');
-            pendingDeleteTarget = null;
-            pendingDeleteType = '';
         }
 
         document.getElementById('confirmModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeModal();
+            if (e.target === e.currentTarget) {
+                closeModal();
+                pendingDeleteTarget = null;
+                pendingDeleteType = '';
+            }
         });
 
         // ============================================================
